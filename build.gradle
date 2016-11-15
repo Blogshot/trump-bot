@@ -1,0 +1,19 @@
+group 'Discord-Bots'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    compile "com.github.austinv11:Discord4j:2.6.1"
+    // Allows you to log events from Discord4J
+    compile "ch.qos.logback:logback-classic:1.1.7"
+}
