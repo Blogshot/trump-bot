@@ -15,22 +15,23 @@ public class InterfaceListener implements IListener<MessageReceivedEvent> { // T
     String message = event.getMessage().getContent().toLowerCase(); // Gets the message from the event object NOTE: This is not the content of the message, but the object itself
     
     IChannel textChannel = event.getMessage().getChannel();
-    
-    List<IVoiceChannel> voiceChannels = event.getMessage().getAuthor().getConnectedVoiceChannels();
-    
-    if (voiceChannels.size() <= 0) {
-      Main.writeMessage(event.getMessage().getChannel(),
-          "Look, you have to be in a voice channel to do this." +
-              "I know I could do this, I do this all the time. " +
-              "I need you to give me access immediately so " +
-              "we can make this discord great again!");
-      return;
-    }
-    
-    IVoiceChannel voiceChannel = voiceChannels.get(0);
+        
     
     if (message.equals("!trump")) {
-      
+  
+      List<IVoiceChannel> voiceChannels = event.getMessage().getAuthor().getConnectedVoiceChannels();
+  
+      if (voiceChannels.size() <= 0) {
+        Main.writeMessage(event.getMessage().getChannel(),
+            "Look, you have to be in a voice channel to do this." +
+                "I know I could do this, I do this all the time. " +
+                "I need you to give me access immediately so " +
+                "we can make this discord great again!");
+        return;
+      }
+  
+      IVoiceChannel voiceChannel = voiceChannels.get(0);
+  
       // Abort if busy
       if (Main.isBusy) {
         
