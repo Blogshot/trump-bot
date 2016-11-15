@@ -18,7 +18,7 @@ import java.util.Random;
 
 public class Main {
   
-  private static String token = "MjQ3ODY5NzU2NjA5MjY1NjY0.CwveNg.0PqWp7JYIKu1azSLRQ8Xy8TzEJw";
+  private static String token = "";
   
   private static IDiscordClient client;
   
@@ -70,7 +70,9 @@ public class Main {
     } catch (MissingPermissionsException e) {
       e.printStackTrace();
       Main.writeMessage(textChannel,
-          "I do not have permission to play my trump-et in there! :(");
+          "I hate to tell you this, but I have no permission to join this channel." +
+              "Everybody knows I'm fast at joining these channels, " +
+              "if I could join, I’d join so fast, you have no idea how fast.");
     } catch (UnsupportedAudioFileException | IOException e) {
       e.printStackTrace();
     }

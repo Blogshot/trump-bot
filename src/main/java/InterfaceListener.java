@@ -20,7 +20,10 @@ public class InterfaceListener implements IListener<MessageReceivedEvent> { // T
     
     if (voiceChannels.size() <= 0) {
       Main.writeMessage(event.getMessage().getChannel(),
-          "You have to be in a voice channel to do this.");
+          "Look, you have to be in a voice channel to do this." +
+              "I know I could do this, I do this all the time. " +
+              "I need you to give me access immediately so " +
+              "we can make this discord great again!");
       return;
     }
     
@@ -32,7 +35,8 @@ public class InterfaceListener implements IListener<MessageReceivedEvent> { // T
       if (Main.isBusy) {
         
         Main.writeMessage(textChannel,
-            "I am busy already, try again in a moment! :)");
+            "I am a very busy man, I have to manage a great, a huge empire." +
+                "We need to prepare and give it alle we've got the next time!");
         return;
         
       }
