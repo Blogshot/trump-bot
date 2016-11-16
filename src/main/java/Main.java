@@ -12,8 +12,7 @@ import sx.blah.discord.util.audio.AudioPlayer;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
 public class Main {
@@ -24,7 +23,9 @@ public class Main {
   
   public static boolean isBusy = false;
   
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException {
+  
+    System.setOut(new PrintStream(new FileOutputStream("trump.log")));
     
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
