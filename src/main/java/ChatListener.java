@@ -106,7 +106,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
         "Trump-Bot usage:\n" +
             "!trump [options]\n\n" +
             "Options:\n\n" +
-            "\t'-help','-h'\tShow this message" +
+            "\t'-help','-h'\tShow this message\n" +
             "\t'-c=<channel>'\tSpecify voice channel to join"
     );
     
