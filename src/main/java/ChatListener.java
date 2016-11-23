@@ -48,7 +48,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
             
           } else if (argument.startsWith("-c=")) {
   
-            String value = argument.substring(message.indexOf("-c=") + 3);
+            String value = argument.substring(argument.indexOf("-c=") + 3);
             boolean found = false;
   
             // iterate through available channels to find the specified channel
