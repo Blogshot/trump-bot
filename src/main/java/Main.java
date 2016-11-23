@@ -21,7 +21,7 @@ public class Main {
   
   private static IDiscordClient client;
   
-  public static boolean isBusy = false;
+  public static IVoiceChannel currentVoiceChannel;
   
   public static void main(String[] args) throws FileNotFoundException {
   
@@ -39,8 +39,7 @@ public class Main {
       EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher instance for this client instance
       
       // Register some listeners
-      dispatcher.registerListener(new InterfaceListener()); // Listener which reacts to commands
-      dispatcher.registerListener(new TrackStartedListener()); // Listener which sets "busy-flag"
+      dispatcher.registerListener(new ChatListener()); // Listener which reacts to commands
       dispatcher.registerListener(new TrackFinishedListener()); // Listener which reacts to finished audio
       
       
@@ -49,6 +48,7 @@ public class Main {
     }
   }
   
+  // Join channel and play random audio
   public static void playTrump(IVoiceChannel voiceChannel, IChannel textChannel) {
     
     // Join channel
@@ -71,9 +71,7 @@ public class Main {
     } catch (MissingPermissionsException e) {
       e.printStackTrace();
       Main.writeMessage(textChannel,
-          "I hate to tell you this, but I have no permission to join this channel." +
-              "Everybody knows I'm fast at joining these channels, " +
-              "if I could join, I’d join so fast, you have no idea how fast.");
+          "I hate to tell you this, but I have no permission to join this channel.");
     } catch (UnsupportedAudioFileException | IOException e) {
       e.printStackTrace();
     }
