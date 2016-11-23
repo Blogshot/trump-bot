@@ -5,7 +5,7 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.util.List;
 
-public class InterfaceListener implements IListener<MessageReceivedEvent> { // The event type in IListener<> can be any class which extends Event
+public class ChatListener implements IListener<MessageReceivedEvent> { // The event type in IListener<> can be any class which extends Event
   
   
   @Override
@@ -23,25 +23,22 @@ public class InterfaceListener implements IListener<MessageReceivedEvent> { // T
   
       if (voiceChannels.size() <= 0) {
         Main.writeMessage(event.getMessage().getChannel(),
-            "Look, you have to be in a voice channel to do this." +
-                "I know I could do this, I do this all the time. " +
-                "I need you to give me access immediately so " +
-                "we can make this discord great again!");
+            "Look, you have to be in a voice channel to do this. It's that easy!");
         return;
       }
   
+      // Current voicechannel of author
       IVoiceChannel voiceChannel = voiceChannels.get(0);
   
       // Abort if busy
-      if (Main.isBusy) {
+      if (Main.currentVoiceChannel != null) {
         
         Main.writeMessage(textChannel,
-            "I am a very busy man, I have to manage a great, a huge empire." +
-                "We need to prepare and give it alle we've got the next time!");
+            "I am a very busy man, and currently I am needed somewhere else.");
         return;
-        
       }
       
+      Main.currentVoiceChannel = voiceChannel;
       Main.playTrump(voiceChannel, textChannel);
       
     }
