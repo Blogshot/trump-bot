@@ -123,7 +123,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
     private void printHelp(IChannel textChannel) {
         Main.writeMessage(textChannel,
                 "Trump-Bot usage:\n" +
-                        "!trump [options]\n\n" +
+                        "!trump [options]\n" +
                         "!merkel [options]\n\n" +
                         "Options:\n\n" +
                         "\t'-help','-h'\t\tShow this message\n" +
