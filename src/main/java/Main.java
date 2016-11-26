@@ -13,6 +13,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Random;
 
 public class Main {
@@ -47,27 +48,41 @@ public class Main {
       e.printStackTrace();
     }
   }
-  
+
+  public enum Politician {
+    trump, merkel
+  }
+
   // Join channel and play random audio
-  public static void playTrump(IVoiceChannel voiceChannel, IChannel textChannel) {
+  public static void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, Politician politician) {
     
     // Join channel
     try {
       voiceChannel.join();
       
       // pick a random audio
-      File audio = new File("audio");
-      
-      int random = new Random().nextInt(audio.listFiles().length);
-      
-      File soundFile = audio.listFiles()[random];
-      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-      
-      // feed the player with audio
-      AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
-      
-      player.queue(audioInputStream);
-      
+      File audio = null;
+      if (politician == Politician.trump) {
+        audio = new File("audio/trump");
+
+      } else if (politician == Politician.merkel) {
+        audio = new File("audio/merkel");
+      }
+
+      File[] files = audio.listFiles();
+
+      if (files != null && files.length > 0) {
+        int random = new Random().nextInt(files.length);
+
+        File soundFile = files[random];
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+
+        // feed the player with audio
+        AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
+
+        player.queue(audioInputStream);
+      }
+
     } catch (MissingPermissionsException e) {
       e.printStackTrace();
       Main.writeMessage(textChannel,

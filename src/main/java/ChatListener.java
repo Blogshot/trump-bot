@@ -17,15 +17,34 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
   
     IChannel textChannel = event.getMessage().getChannel();
     IGuild guild = event.getMessage().getGuild();
+
+    Main.Politician politician;
   
-  
-    if (message.startsWith("!trump")) {
-            
+    if (message.startsWith("!trump") || message.startsWith("!merkel")) {
+
+      boolean hasArguments = false;
+
+      if (message.startsWith("!trump")) {
+        politician = Main.Politician.trump;
+
+        hasArguments = message.length() > "!trump".length();
+
+      } else {
+        politician = Main.Politician.merkel;
+
+        hasArguments = message.length() > "!merkel".length();
+      }
+
       // Abort if busy
       if (Main.currentVoiceChannel != null) {
-  
-        Main.writeMessage(textChannel,
-            "I am a very busy man, and currently I am needed somewhere else.");
+
+        if (politician == Main.Politician.trump) {
+          Main.writeMessage(textChannel,
+                  "I am a very busy man, and currently I am needed somewhere else.");
+        } else {
+          Main.writeMessage(textChannel,
+                  "I am a very busy women, and currently I am needed somewhere else.");
+        }
         return;
       }
       
@@ -35,8 +54,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
       IVoiceChannel voiceChannel = null;
     
       // has parameters
-      if (message.length() > "!trump".length()) {
-  
+      if (hasArguments) {
+
         for (String argument : getArguments(message)) {
     
           // help-message
@@ -46,9 +65,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
             printHelp(textChannel);
             return;
             
-          } else if (argument.startsWith("-c=")) {
+          } else if (argument.startsWith("-c:")) {
   
-            String value = argument.substring(argument.indexOf("-c=") + 3);
+            String value = argument.substring(argument.indexOf("-c:") + 3);
             boolean found = false;
   
             // iterate through available channels to find the specified channel
@@ -90,14 +109,14 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
               
         if (voiceChannel == null) {
           Main.writeMessage(event.getMessage().getChannel(),
-              "Look, you have to be in a voicechannel (or specify one by adding '-c=<name of channel>' to do this.");
+              "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
           return;
         }
         
       }
   
       Main.currentVoiceChannel = voiceChannel;
-      Main.playTrump(voiceChannel, textChannel);
+      Main.playAudio(voiceChannel, textChannel, politician);
     }
   }
   
