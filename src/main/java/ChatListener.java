@@ -4,6 +4,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListener implements IListener<MessageReceivedEvent> { // The event type in IListener<> can be any class which extends Event
@@ -56,7 +57,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
             // has parameters
             if (hasArguments) {
 
-                for (String argument : getArguments(message)) {
+                for (String argument : getArguments(message, event)) {
 
                     // help-message
                     if (argument.equals("-help") || argument.equals("-h")) {
@@ -143,17 +144,40 @@ public class ChatListener implements IListener<MessageReceivedEvent> { // The ev
         return list;
 
     }
-
-    private String[] getArguments(String message) {
+  
+  private ArrayList<String> getArguments(String message, MessageReceivedEvent event) {
             /*
           get argument-string
-          !trump -c=test -f=china
+          !trump /c:test -f=china
           ->
           -c=test -f=china
-        
-         */
-        String arguments = message.substring(message.indexOf(" ") + 1);
 
-        return arguments.split(" ");
+         */
+    
+    ArrayList<String> args = new ArrayList<>();
+    
+    
+    int mark = message.length();
+    
+    for (int i = message.length() - 1; i >= 0; i--) {
+      
+      try {
+        
+        // if there is " -"
+        if (message.charAt(i) == '-' && message.charAt(i - 1) == ' ') {
+          args.add(message.substring(i, mark));
+          
+          // set mark at space
+          mark = i - 1;
+        }
+        
+      } catch (IndexOutOfBoundsException e) {
+        Main.writeMessage(event.getMessage().getChannel(),
+            "Error while parsing arguments: " + e.getMessage() + "\n\n" + "i=" + i + "\nmark=" + mark);
+      }
     }
+    
+    
+    return args;
+  }
 }
