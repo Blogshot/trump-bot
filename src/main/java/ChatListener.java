@@ -12,12 +12,13 @@ import java.util.Random;
 public class ChatListener implements IListener<MessageReceivedEvent> {
   
   @Override
-  public void handle(MessageReceivedEvent event) { // This is called when the ReadyEvent is dispatched
+  public void handle(MessageReceivedEvent event) {
     
     // get message content
     String message = event.getMessage().getContent().toLowerCase();
     
-    if (message.startsWith("!trump") || message.startsWith("!merkel")) {
+    if (message.startsWith("!trump") || message.startsWith("!merkel") ||
+        message.startsWith("!airhorn") || message.startsWith("!ah")) {
       
       boolean hasArguments;
       // trim string
@@ -49,9 +50,17 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       if (message.startsWith("!trump")) {
         politician = Main.Politician.trump;
         hasArguments = message.length() > "!trump".length();
-      } else {
+      } else if (message.startsWith("!merkel")) {
         politician = Main.Politician.merkel;
         hasArguments = message.length() > "!merkel".length();
+      } else {
+        politician = Main.Politician.airhorn;
+        
+        if (message.startsWith("!ah")) {
+          hasArguments = message.length() > "!ah".length();
+        } else {
+          hasArguments = message.length() > "!airhorn".length();
+        }
       }
       
       // init sound with random
@@ -238,6 +247,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     File audio = new File("audio/trump");
     if (politician == Main.Politician.merkel) {
       audio = new File("audio/merkel");
+    } if (politician == Main.Politician.airhorn) {
+      audio = new File("audio/airhorn");
     }
     
     File[] files = audio.listFiles();
@@ -266,6 +277,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     
     if (politician == Main.Politician.merkel) {
       audio = new File("audio/merkel");
+    } else if (politician == Main.Politician.airhorn) {
+      audio = new File("audio/airhorn");
     }
     
     // pick a random audio
