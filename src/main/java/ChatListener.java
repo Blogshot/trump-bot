@@ -4,146 +4,202 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListener implements IListener<MessageReceivedEvent> { // The event type in IListener<> can be any class which extends Event
-
-
-    @Override
-    public void handle(MessageReceivedEvent event) { // This is called when the ReadyEvent is dispatched
-
-        // get message content
-        String message = event.getMessage().getContent().toLowerCase();
-
-        IChannel textChannel = event.getMessage().getChannel();
-        IGuild guild = event.getMessage().getGuild();
-
-        Main.Politician politician;
-
-        if (message.startsWith("!trump") || message.startsWith("!merkel")) {
-
-            boolean hasArguments = false;
-
-            if (message.startsWith("!trump")) {
-                politician = Main.Politician.trump;
-
-                hasArguments = message.length() > "!trump".length();
-
-            } else {
-                politician = Main.Politician.merkel;
-
-                hasArguments = message.length() > "!merkel".length();
-            }
-
-            // Abort if busy
-            if (Main.currentVoiceChannel != null) {
-
-                if (politician == Main.Politician.trump) {
-                    Main.writeMessage(textChannel,
-                            "I am a very busy man, and currently I am needed somewhere else.");
-                } else {
-                    Main.writeMessage(textChannel,
-                            "I am a very busy women, and currently I am needed somewhere else.");
-                }
-                return;
-            }
-
-            // trim string
-            message = message.trim();
-
-            IVoiceChannel voiceChannel = null;
-
-            // has parameters
-            if (hasArguments) {
-
-                for (String argument : getArguments(message, event)) {
-
-                    // help-message
-                    if (argument.equals("-help") || argument.equals("-h")) {
-
-                        // print help and exit
-                        printHelp(textChannel);
-                        return;
-
-                    } else if (argument.startsWith("-c:")) {
-
-                        String value = argument.substring(argument.indexOf("-c:") + 3);
-                        boolean found = false;
-
-                        // iterate through available channels to find the specified channel
-                        for (IVoiceChannel candidate : guild.getVoiceChannels()) {
-
-                            // set voicechannel
-                            if (candidate.getName().toLowerCase().equals(value)) {
-                                voiceChannel = candidate;
-                                found = true;
-                            }
-
-                        }
-
-                        // if no channel was found
-                        if (!found) {
-
-                            // invalid channel, report and exit
-                            Main.writeMessage(textChannel,
-                                    "I could not find the voice-channel you specified. Select one of the following:\n" +
-                                            getVoiceChannelList(guild));
-                            return;
-                        }
-                    } else {
-                        // invalid argument, print help and exit
-                        printHelp(textChannel);
-                        return;
-                    }
-
-                }
-            } else {
-
-                // no parameters, default behaviour
-                List<IVoiceChannel> voiceChannels = event.getMessage().getAuthor().getConnectedVoiceChannels();
-
-                // Current voicechannel of author
-                if (voiceChannels.size() > 0) {
-                    voiceChannel = voiceChannels.get(0);
-                }
-
-                if (voiceChannel == null) {
-                    Main.writeMessage(event.getMessage().getChannel(),
-                            "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
-                    return;
-                }
-
-            }
-
-            Main.currentVoiceChannel = voiceChannel;
-            Main.playAudio(voiceChannel, textChannel, politician);
+  
+  
+  @Override
+  public void handle(MessageReceivedEvent event) { // This is called when the ReadyEvent is dispatched
+    
+    // get message content
+    String message = event.getMessage().getContent().toLowerCase();
+    
+    IChannel textChannel = event.getMessage().getChannel();
+    IGuild guild = event.getMessage().getGuild();
+    
+    Main.Politician politician;
+    
+    if (message.startsWith("!trump") || message.startsWith("!merkel")) {
+      
+      boolean hasArguments = false;
+      
+      if (message.startsWith("!trump")) {
+        politician = Main.Politician.trump;
+        
+        hasArguments = message.length() > "!trump".length();
+        
+      } else {
+        politician = Main.Politician.merkel;
+        
+        hasArguments = message.length() > "!merkel".length();
+      }
+      
+      // Abort if busy
+      if (Main.currentVoiceChannel != null) {
+        
+        if (politician == Main.Politician.trump) {
+          Main.writeMessage(textChannel,
+              "I am a very busy man, and currently I am needed somewhere else.");
+        } else {
+          Main.writeMessage(textChannel,
+              "I am a very busy women, and currently I am needed somewhere else.");
         }
-    }
-
-    private void printHelp(IChannel textChannel) {
-        Main.writeMessage(textChannel,
-                "Trump-Bot usage:\n" +
-                        "!trump [options]\n" +
-                        "!merkel [options]\n\n" +
-                        "Options:\n\n" +
-                        "\t'-help','-h'\t\tShow this message\n" +
-                        "\t'-c:<channel>'\t\tSpecify voice channel to join"
-        );
-
-    }
-
-    private String getVoiceChannelList(IGuild guild) {
-
-        String list = "";
-
-        for (IVoiceChannel channel : guild.getVoiceChannels()) {
-            list += channel.getName() + "\n";
+        return;
+      }
+      
+      // trim string
+      message = message.trim();
+      
+      IVoiceChannel voiceChannel = null;
+      
+      // has parameters
+      if (hasArguments) {
+        
+        for (String argument : getArguments(message, event)) {
+          
+          // help-message
+          if (argument.equals("-help") || argument.equals("-h")) {
+            
+            // print help and exit
+            printHelp(textChannel);
+            return;
+            
+            // custom channel
+          } else if (argument.startsWith("-c:")) {
+            
+            String value = argument.substring(argument.indexOf("-c:") + 3);
+            boolean found = false;
+            
+            // iterate through available channels to find the specified channel
+            for (IVoiceChannel candidate : guild.getVoiceChannels()) {
+              
+              // set voicechannel
+              if (candidate.getName().toLowerCase().equals(value)) {
+                voiceChannel = candidate;
+                found = true;
+              }
+              
+            }
+            
+            // if no channel was found
+            if (!found) {
+              
+              // invalid channel, report and exit
+              Main.writeMessage(textChannel,
+                  "I could not find the voice-channel you specified. Select one of the following:\n" +
+                      getVoiceChannelList(guild));
+              return;
+            }
+            
+            // custom sound file
+          } else if (argument.startsWith("-f:")) {
+            
+            String value = argument.substring(argument.indexOf("-c:") + 3);
+  
+            // make * as wildcard work
+            String regex = ("\\Q" + value + "\\E").replace("*", "\\E.*\\Q");
+             
+            File audio = new File("audio/trump");
+            if (politician == Main.Politician.merkel) {
+              audio = new File("audio/merkel");
+            }
+            
+            File[] files = audio.listFiles();
+            ArrayList<File> candidates = new ArrayList<>();
+            
+            // iterate through available files to find matching ones
+            for (File candidate : files) {
+              
+              // get matches
+              if (candidate.getName().matches(regex)) {
+                candidates.add(candidate);
+              }
+              
+            }
+            
+            
+            if (candidates.size() == 0) {
+              
+              // no matches
+              Main.writeMessage(textChannel,
+                  "I could not find a filename matching the pattern you specified.");
+              return;
+            } else if (candidates.size() > 1) {
+              
+              // multiple matches
+              String matches = "";
+              for (File candidate : candidates) {
+                matches += candidate.getName() + "\n";
+              }
+              
+              Main.writeMessage(textChannel,
+                  "I found multiple audios matching your pattern. Please select one of the following:\n" +
+                      matches.trim()
+              );
+              return;
+            } else {
+              
+              Main.playAudio(voiceChannel, textChannel, candidates.get(0));
+              
+            }
+            
+          } else {
+            // invalid argument, print help and exit
+            printHelp(textChannel);
+            return;
+          }
+          
         }
-
-        return list;
-
+      } else {
+        
+        // no parameters, default behaviour
+        List<IVoiceChannel> voiceChannels = event.getMessage().getAuthor().getConnectedVoiceChannels();
+        
+        // Current voicechannel of author
+        if (voiceChannels.size() > 0) {
+          voiceChannel = voiceChannels.get(0);
+        }
+        
+        if (voiceChannel == null) {
+          Main.writeMessage(event.getMessage().getChannel(),
+              "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
+          return;
+        }
+        
+      }
+      
+      Main.currentVoiceChannel = voiceChannel;
+      Main.playAudio(voiceChannel, textChannel, politician);
     }
+  }
+  
+  private void printHelp(IChannel textChannel) {
+    Main.writeMessage(textChannel,
+        "Trump-Bot usage:\n" +
+            "!trump [options]\n" +
+            "!merkel [options]\n\n" +
+            "Options:\n\n" +
+            "\t'-help','-h'\t\tShow this message\n" +
+            "\t'-c:<channel>'\t\tSpecify voice channel to join\n" +
+            "\t'-f:<pattern-as-regex>'\t\tSpecify soundfile to play. Wildcards (*) are supported."
+    );
+    
+  }
+  
+  private String getVoiceChannelList(IGuild guild) {
+    
+    String list = "";
+    
+    for (IVoiceChannel channel : guild.getVoiceChannels()) {
+      list += channel.getName() + "\n";
+    }
+    
+    return list;
+    
+  }
   
   private ArrayList<String> getArguments(String message, MessageReceivedEvent event) {
             /*
