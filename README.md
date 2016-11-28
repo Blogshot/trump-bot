@@ -15,9 +15,9 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 
 ##### Wildcards
 Play 'let-em-talk.mp3'  
-`!trump -f:\*let-em\*mp3` or  
-`!trump -f:let\*talk\*`
+`!trump -f:*let-em*mp3` or  
+`!trump -f:let*talk*`
 
 #####
 Send the bot to the voice-channel 'General' and play 'let-em-talk.mp3'
-`!trump -c:General -f:\*let-em\*mp3`
+`!trump -c:General -f:*let-em*mp3`
