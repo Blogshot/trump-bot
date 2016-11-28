@@ -13,11 +13,10 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 
 #### Examples
 
-##### Wildcards
-Play 'let-em-talk.mp3'  
+Play 'let-em-talk.mp3' by using wildcards:  
 `!trump -f:*let-em*mp3` or  
 `!trump -f:let*talk*`
 
 #####
-Send the bot to the voice-channel 'General' and play 'let-em-talk.mp3'
-`!trump -c:General -f:*let-em*mp3`
+Send the bot to a voice-channel named 'General' and play 'let-em-talk.mp3':  
+`!trump -c:General -f:let-em-talk.mp3`
