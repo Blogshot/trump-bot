@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.Random;
 
 public class Main {
   
@@ -68,7 +67,6 @@ public class Main {
       
       player.queue(audioInputStream);
       
-      
     } catch (MissingPermissionsException e) {
       e.printStackTrace();
       Main.writeMessage(textChannel,
@@ -77,28 +75,7 @@ public class Main {
       e.printStackTrace();
     }
   }
-  
-  // Join channel and play random audio
-  public static void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, Politician politician) {
-    
-    // set path for selected politician
-    File audio = new File("audio/trump");
-      
-    if (politician == Politician.merkel) {
-      audio = new File("audio/merkel");
-    }
-  
-    // pick a random audio
-    File[] files = audio.listFiles();
-    
-    if (files.length > 0) {
-      int random = new Random().nextInt(files.length);
-      
-      File soundFile = files[random];
-      
-      playAudio(voiceChannel, textChannel, soundFile);
-    }
-  }
+
   
   public static void writeMessage(IChannel channel, String message) {
     
