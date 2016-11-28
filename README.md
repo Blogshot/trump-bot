@@ -5,7 +5,7 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 
 #### Commands
 |Command|Action|
-|:---:|:---:|
+|:---|:---|
 |!trump, !merkel|Invoke the bot with specified politician|
 |-help, -h|Show help-message|
 |-c:\<channel>|Send the bot to a specified channel|
