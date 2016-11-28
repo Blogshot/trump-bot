@@ -5,6 +5,7 @@ gradlew*
 
 # Build
 build/
+trump.log
 
 # IDEA
 .idea
