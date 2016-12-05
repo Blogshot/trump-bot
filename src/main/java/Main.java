@@ -51,7 +51,7 @@ public class Main {
   
   
   public enum Politician {
-    trump, airhorn, merkel
+    trump, clinton, airhorn, merkel
   }
   
   // Join channel and play specified audio

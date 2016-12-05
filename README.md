@@ -8,11 +8,11 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 #### Commands
 |Command|Action|
 |:---|:---|
-|!trump, !merkel|Invoke the bot with specified politician|
+|!trump, !clinton, !merkel, !airhorn, !ah|Invoke the bot with corresponding set of audio|
 |-help, -h|Show help-message|
 |-c:\<channel>|Send the bot to a specified channel|
 |-f:\<pattern-of-file>|Specify sound file to use. Wildcards (*) are supported|
-|-f:*, -sounds|List all available sound files|
+|-sounds|List all available sound files. Equals '-f:*'|
 
 #### Examples
 

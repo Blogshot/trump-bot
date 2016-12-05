@@ -17,21 +17,32 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     // get message content
     String message = event.getMessage().getContent().toLowerCase();
     
-    if (message.startsWith("!trump") || message.startsWith("!merkel") ||
-        message.startsWith("!airhorn") || message.startsWith("!ah")) {
-      
-      boolean hasArguments;
+    Main.Politician politician = null;
+    
+    // set politician
+    for (Main.Politician value : Main.Politician.values()) {
+      if (message.startsWith("!" + value.name())) {
+        politician = value;
+      }
+    }
+  
+    // For second possible airhorn-command
+    if (message.startsWith("!ah")) {
+      politician = Main.Politician.airhorn;
+    }
+    
+    if (politician != null) {
+  
       // trim string
       message = message.trim();
       
-      Main.Politician politician;
-      
+      boolean hasArguments = message.length() > ("!" + politician.name()).length();
       
       /*
           INITIALISATION
           
           we have to initialise
-          - text-channel to respond with feedback
+          - text-channel to respond with feedback if needed
           - sound-file to play (requires politician)
           - voice-channel to connect to
        */
@@ -39,28 +50,11 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       // init text channel
       IChannel textChannel = event.getMessage().getChannel();
       
-      // Abort if busy
+      // Abort if bot is busy
       if (Main.currentVoiceChannel != null) {
         Main.writeMessage(textChannel,
             "I am a very at the moment, and currently I am needed somewhere else.");
         return;
-      }
-      
-      // init politician
-      if (message.startsWith("!trump")) {
-        politician = Main.Politician.trump;
-        hasArguments = message.length() > "!trump".length();
-      } else if (message.startsWith("!merkel")) {
-        politician = Main.Politician.merkel;
-        hasArguments = message.length() > "!merkel".length();
-      } else {
-        politician = Main.Politician.airhorn;
-        
-        if (message.startsWith("!ah")) {
-          hasArguments = message.length() > "!ah".length();
-        } else {
-          hasArguments = message.length() > "!airhorn".length();
-        }
       }
       
       // init sound with random
@@ -122,44 +116,54 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             
             // custom sound file
           } else if (argument.startsWith("-f:")) {
-            
+  
             String value = argument.substring(argument.indexOf("-f:") + 3);
-            
+  
             // make * as wildcard work
             String pattern = ("\\Q" + value + "\\E").replace("*", "\\E.*\\Q");
-            
+  
             // get list of matching files
             ArrayList<File> candidates = getAudio(politician, pattern);
-            
+  
             if (candidates.size() == 0) {
-
+    
               // no match found, cant continue. report and exit
               Main.writeMessage(textChannel,
                   "I could not find a filename matching the pattern you specified."
               );
               return;
-              
+    
             } else if (candidates.size() > 1) {
-              
+  
               // multiple matches
-              String matches = "";
-              for (File candidate : candidates) {
-                matches += candidate.getName() + "\n";
-              }
+              String matches = fileListToString(candidates);
               
               Main.writeMessage(textChannel,
-                  "I found multiple audios matching your pattern. Please select one of the following:\n" +
-                      matches.trim()
+                  "I found multiple audios matching your pattern. Please select one of the following:\n\n" +
+                      matches
               );
               return;
-              
+    
             } else {
-              
+    
               // set the only match as desired audio
               soundFile = candidates.get(0);
-              
+    
             }
+          } else if (argument.equals("-sounds")) {
+  
+            File audio = new File("audio/" + politician.name());
             
+            File[] files = audio.listFiles();
+  
+            String matches = fileListToString(files);
+            
+            Main.writeMessage(textChannel,
+                "Following files are available:\n\n" +
+                    matches
+            );
+            return;
+  
           } else {
             // unknown argument, print help and exit
             printHelp(textChannel);
@@ -181,15 +185,37 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     }
   }
   
+  private String fileListToString(File[] files) {
+    // multiple matches
+    String matches = "";
+    for (File file : files) {
+      matches += file.getName() + "\n";
+    }
+  
+    return matches.trim();  }
+  
+  private String fileListToString(ArrayList<File> files) {
+    // multiple matches
+    String matches = "";
+    for (File file : files) {
+      matches += file.getName() + "\n";
+    }
+    
+    return matches.trim();
+  }
+  
   private void printHelp(IChannel textChannel) {
     Main.writeMessage(textChannel,
         "Trump-Bot usage:\n" +
             "!trump [options]\n" +
-            "!merkel [options]\n\n" +
-            "Options:\n\n" +
-            "\t'-help','-h'\t\tShow this message\n" +
-            "\t'-c:<channel>'\t\tSpecify voice channel to join\n" +
-            "\t'-f:<pattern-as-regex>'\t\tSpecify soundfile to play. Wildcards (*) are supported."
+            "!clinton [options]\n" +
+            "!merkel [options]\n" +
+            "!airhorn, !ah [options]\n" +
+            "\nOptions:\n\n" +
+            "\t'-help','-h'\t\t\t\t\t\tShow this message\n" +
+            "\t'-c:<channel>'\t\t\t\tSpecify voice channel to join\n" +
+            "\t'-f:<pattern-of-file>'\tSpecify sound file to play. Wildcards (\\*) are supported.\n" +
+            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'"
     );
     
   }
@@ -244,12 +270,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   
   private ArrayList<File> getAudio(Main.Politician politician, String pattern) {
     
-    File audio = new File("audio/trump");
-    if (politician == Main.Politician.merkel) {
-      audio = new File("audio/merkel");
-    } if (politician == Main.Politician.airhorn) {
-      audio = new File("audio/airhorn");
-    }
+    File audio = new File("audio/" + politician.name());
     
     File[] files = audio.listFiles();
     ArrayList<File> candidates = new ArrayList<>();
@@ -272,14 +293,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   private File getRandomAudio(Main.Politician politician) {
     
     // set path for selected politician
-    File audio = new File("audio/trump");
+    File audio = new File("audio/" + politician.name());
+  
     File soundFile = null;
-    
-    if (politician == Main.Politician.merkel) {
-      audio = new File("audio/merkel");
-    } else if (politician == Main.Politician.airhorn) {
-      audio = new File("audio/airhorn");
-    }
     
     // pick a random audio
     File[] files = audio.listFiles();
