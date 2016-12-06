@@ -51,9 +51,10 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       IChannel textChannel = event.getMessage().getChannel();
       
       // Abort if bot is busy
-      if (Main.currentVoiceChannel != null) {
+      IVoiceChannel usedChannel = Main.isBusyInGuild(event.getMessage().getGuild());
+      if (usedChannel != null) {
         Main.writeMessage(textChannel,
-            "I am a very at the moment, and currently I am needed somewhere else.");
+            "I am a very at the moment, and currently I am needed in Channel '" + usedChannel.getName() + "'.");
         return;
       }
       
@@ -179,7 +180,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         return;
       }
       
-      Main.currentVoiceChannel = voiceChannel;
       Main.playAudio(voiceChannel, textChannel, soundFile);
       
     }

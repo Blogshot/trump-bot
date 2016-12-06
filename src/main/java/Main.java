@@ -2,6 +2,7 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -22,7 +23,38 @@ public class Main {
   
   private static IDiscordClient client;
   
-  public static IVoiceChannel currentVoiceChannel;
+  public static IVoiceChannel isBusyInGuild(IGuild guild) {
+    
+    for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
+      
+      if (voiceChannel.getGuild().getID().equals(guild.getID())) {
+        return voiceChannel;
+      }
+      
+    }
+    return null;
+  }
+    
+  public static void removeGuildFromList(IGuild guild) {
+    
+    IVoiceChannel channelToLeave = null;
+    
+    for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
+    
+      if (voiceChannel.getGuild().getID().equals(guild.getID())) {
+
+        channelToLeave = voiceChannel;
+        break;
+
+      }
+    
+    }
+    
+    if (channelToLeave != null) {
+      channelToLeave.leave();
+    }
+    
+  }
   
   public static void main(String[] args) throws FileNotFoundException {
     
@@ -59,7 +91,7 @@ public class Main {
     // Join channel
     try {
       voiceChannel.join();
-      
+  
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
       
       // feed the player with audio
