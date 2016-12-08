@@ -23,6 +23,10 @@ public class Main {
   
   private static IDiscordClient client;
   
+  public enum Politician {
+    trump, clinton, merkel
+  }
+  
   public static IVoiceChannel isBusyInGuild(IGuild guild) {
     
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
@@ -79,11 +83,6 @@ public class Main {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-  
-  
-  public enum Politician {
-    trump, clinton, airhorn, merkel
   }
   
   // Join channel and play specified audio

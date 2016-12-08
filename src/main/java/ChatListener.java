@@ -25,11 +25,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         politician = value;
       }
     }
-  
-    // For second possible airhorn-command
-    if (message.startsWith("!ah")) {
-      politician = Main.Politician.airhorn;
-    }
     
     if (politician != null) {
   
