@@ -13,6 +13,7 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 |-c:\<channel>|Send the bot to a specified channel|
 |-f:\<pattern-of-file>|Specify sound file to use. Wildcards (*) are supported|
 |-sounds|List all available sound files. Equals '-f:*'|
+|-stats|Print misc. statistics|
 
 #### Examples
 
