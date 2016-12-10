@@ -9,5 +9,9 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
     // Leave current channel after audio finished and set it to null again
     Main.removeGuildFromList(event.getPlayer().getGuild());
     
+    // Update stats
+    Main.played++;
+    Main.saveStats();
+    
   }
 }

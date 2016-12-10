@@ -5,7 +5,9 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -27,7 +29,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     }
     
     if (politician != null) {
-  
+      
       // trim string
       message = message.trim();
       
@@ -49,7 +51,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       IVoiceChannel usedChannel = Main.isBusyInGuild(event.getMessage().getGuild());
       if (usedChannel != null) {
         Main.writeMessage(textChannel,
-            "I am a very at the moment, and currently I am needed in Channel '" + usedChannel.getName() + "'.");
+            "I am currently needed in Channel '" + usedChannel.getName() + "'.");
         return;
       }
       
@@ -77,11 +79,15 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           // help-message
           if (argument.equals("-help") || argument.equals("-h")) {
             
-            // print help and exit
+            /*
+             print help and exit
+              */
             printHelp(textChannel);
             return;
             
-            // custom channel
+            /*
+             custom channel
+              */
           } else if (argument.startsWith("-c:")) {
             
             String value = argument.substring(argument.indexOf("-c:") + 3);
@@ -100,7 +106,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
               
             }
             
-            // if no channel was found
+            /*
+             if no channel was found
+              */
             if (!found) {
               
               // invalid channel, report and exit
@@ -110,27 +118,29 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
               return;
             }
             
-            // custom sound file
+            /*
+             custom sound file
+              */
           } else if (argument.startsWith("-f:")) {
-  
+            
             String value = argument.substring(argument.indexOf("-f:") + 3);
-  
+            
             // make * as wildcard work
             String pattern = ("\\Q" + value + "\\E").replace("*", "\\E.*\\Q");
-  
+            
             // get list of matching files
             ArrayList<File> candidates = getAudio(politician, pattern);
-  
+            
             if (candidates.size() == 0) {
-    
+              
               // no match found, cant continue. report and exit
               Main.writeMessage(textChannel,
                   "I could not find a filename matching the pattern you specified."
               );
               return;
-    
+              
             } else if (candidates.size() > 1) {
-  
+              
               // multiple matches
               String matches = fileListToString(candidates);
               
@@ -139,19 +149,23 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
                       matches
               );
               return;
-    
+              
             } else {
-    
+              
               // set the only match as desired audio
               soundFile = candidates.get(0);
-    
+              
             }
+            
+            /*
+              list all sounds
+             */
           } else if (argument.equals("-sounds")) {
-  
+            
             File audio = new File("audio/" + politician.name());
             
             File[] files = audio.listFiles();
-  
+            
             String matches = fileListToString(files);
             
             Main.writeMessage(textChannel,
@@ -159,7 +173,13 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
                     matches
             );
             return;
-  
+            
+            /*
+              print stats to channel
+             */
+          } else if (argument.equals("-stats")) {
+            printStats(textChannel);
+            return;
           } else {
             // unknown argument, print help and exit
             printHelp(textChannel);
@@ -180,14 +200,37 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     }
   }
   
+  private void printStats(IChannel textChannel) {
+    
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+    Date startDate = new Date(Main.startedInMillis);
+    
+    String output =
+        "Current stats:\n\n" +
+            "Activated: " + readStat("played") + " times\n" +
+            "Online since: " + sdf.format(startDate) + "\n" +
+            "Uptime of current session: " + Main.getUptime();
+    
+    Main.writeMessage(textChannel,
+        output
+    );
+  }
+  
+  private String readStat(String stat) {
+    
+    return Main.getStatsAsJson().get(stat).getAsString();
+    
+  }
+  
   private String fileListToString(File[] files) {
     // multiple matches
     String matches = "";
     for (File file : files) {
       matches += file.getName() + "\n";
     }
-  
-    return matches.trim();  }
+    
+    return matches.trim();
+  }
   
   private String fileListToString(ArrayList<File> files) {
     // multiple matches
@@ -281,7 +324,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         
       }
     }
-  
+    
     return candidates;
   }
   
@@ -289,18 +332,18 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     
     // set path for selected politician
     File audio = new File("audio/" + politician.name());
-  
+    
     File soundFile = null;
     
     // pick a random audio
     File[] files = audio.listFiles();
-  
+    
     if (files != null && files.length > 0) {
       int random = new Random().nextInt(files.length);
-    
+      
       soundFile = files[random];
     }
-  
+    
     return soundFile;
   }
 }

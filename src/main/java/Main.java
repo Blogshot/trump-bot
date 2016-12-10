@@ -1,3 +1,6 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -12,10 +15,10 @@ import sx.blah.discord.util.audio.AudioPlayer;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main {
   
@@ -23,8 +26,42 @@ public class Main {
   
   private static IDiscordClient client;
   
+  public static long played = 0;
+  public static long startedInMillis = System.currentTimeMillis();
+  
+  public static void saveStats() {
+    JsonObject obj = new JsonObject();
+    
+    obj.addProperty("played", played);
+  
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    String output = gson.toJson(obj);
+    
+    PrintWriter out;
+    try {
+      out = new PrintWriter("stats.json");
+      out.print(output);
+      out.close();
+    
+    } catch (FileNotFoundException e1) {
+      e1.printStackTrace();
+    }
+  }
+  
   public enum Politician {
     trump, clinton, merkel
+  }
+  
+  public static String getUptime() {
+    
+    long milliseconds = System.currentTimeMillis() - startedInMillis;
+    
+    int seconds = (int) (milliseconds / 1000) % 60 ;
+    int minutes = (int) ((milliseconds / (1000*60)) % 60);
+    int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+    int days   = (int) ((milliseconds / (1000*60*60*24)) % 30);
+    
+    return days + "." + hours + ":" + minutes + ":" + seconds;
   }
   
   public static IVoiceChannel isBusyInGuild(IGuild guild) {
@@ -70,8 +107,10 @@ public class Main {
       }
     }
     
+    played = getStatsAsJson().get("played").getAsLong();
+    
     try {
-      client = getClient(token, true); // Gets the client object
+      client = getClient(token); // Gets the client object
       
       EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher instance for this client instance
       
@@ -82,6 +121,22 @@ public class Main {
       
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+  
+  public static JsonObject getStatsAsJson() {
+    try {
+      byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
+      String json = new String(encoded, Charset.forName("UTF-8"));
+    
+      return new Gson().fromJson(json, JsonObject.class);
+      
+    } catch (Exception e) {
+      
+      // create new Stats-File
+      saveStats();
+  
+      return getStatsAsJson();
     }
   }
   
@@ -121,16 +176,14 @@ public class Main {
     
   }
   
-  private static IDiscordClient getClient(String token, boolean login) throws Exception { // Returns an instance of the Discord client
+  private static IDiscordClient getClient(String token) throws Exception { // Returns an instance of the Discord client
     
     if (Main.client == null) {
       ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
       clientBuilder.withToken(token); // Adds the login info to the builder
-      if (login) {
-        return clientBuilder.login(); // Creates the client instance and logs the client in
-      } else {
-        return clientBuilder.build(); // Creates the client instance but it doesn't log the client in yet, you would have to call client.login() yourself
-      }
+      
+      return clientBuilder.login(); // Creates the client instance and logs the client in
+      
     } else
       return Main.client;
   }
