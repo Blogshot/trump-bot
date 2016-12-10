@@ -209,7 +209,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         "Current stats:\n\n" +
             "Activated: " + readStat("played") + " times\n" +
             "Online since: " + sdf.format(startDate) + "\n" +
-            "Uptime of current session: " + Main.getUptime();
+            "Uptime of current session: " + Main.getUptime() + "\n" +
+            "Currently active guilds: " + readStat("guildCount");
     
     Main.writeMessage(textChannel,
         output

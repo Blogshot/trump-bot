@@ -33,6 +33,7 @@ public class Main {
     JsonObject obj = new JsonObject();
     
     obj.addProperty("played", played);
+    obj.addProperty("guildCount", client.getGuilds().size());
   
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String output = gson.toJson(obj);
