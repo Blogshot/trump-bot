@@ -34,7 +34,7 @@ public class Main {
     
     obj.addProperty("played", played);
     obj.addProperty("guildCount", client.getGuilds().size());
-  
+    
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String output = gson.toJson(obj);
     
@@ -43,7 +43,7 @@ public class Main {
       out = new PrintWriter("stats.json");
       out.print(output);
       out.close();
-    
+      
     } catch (FileNotFoundException e1) {
       e1.printStackTrace();
     }
@@ -57,10 +57,10 @@ public class Main {
     
     long milliseconds = System.currentTimeMillis() - startedInMillis;
     
-    int seconds = (int) (milliseconds / 1000) % 60 ;
-    int minutes = (int) ((milliseconds / (1000*60)) % 60);
-    int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
-    int days   = (int) ((milliseconds / (1000*60*60*24)) % 30);
+    int seconds = (int) (milliseconds / 1000) % 60;
+    int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+    int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+    int days = (int) ((milliseconds / (1000 * 60 * 60 * 24)) % 30);
     
     return days + "." + hours + ":" + minutes + ":" + seconds;
   }
@@ -76,20 +76,20 @@ public class Main {
     }
     return null;
   }
-    
+  
   public static void removeGuildFromList(IGuild guild) {
     
     IVoiceChannel channelToLeave = null;
     
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
-    
+      
       if (voiceChannel.getGuild().getID().equals(guild.getID())) {
-
+        
         channelToLeave = voiceChannel;
         break;
-
+        
       }
-    
+      
     }
     
     if (channelToLeave != null) {
@@ -123,20 +123,49 @@ public class Main {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        while (true) {
+          if (new File("announcement.txt").exists()) {
+            try {
+              byte[] encoded = Files.readAllBytes(Paths.get("announcement.txt"));
+              String message = new String(encoded, Charset.forName("UTF-8"));
+      
+              // write announcement
+              for (IGuild guild : client.getGuilds()) {
+                writeMessage(guild.getChannels().get(0), message);
+              }
+      
+              new File("announcement.txt").delete();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+  
+          try {
+            Thread.sleep(5000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }).start();
   }
   
   public static JsonObject getStatsAsJson() {
     try {
       byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
       String json = new String(encoded, Charset.forName("UTF-8"));
-    
+      
       return new Gson().fromJson(json, JsonObject.class);
       
     } catch (Exception e) {
       
       // create new Stats-File
       saveStats();
-  
+      
       return getStatsAsJson();
     }
   }
@@ -146,7 +175,7 @@ public class Main {
     // Join channel
     try {
       voiceChannel.join();
-  
+      
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
       
       // feed the player with audio
@@ -162,7 +191,7 @@ public class Main {
       e.printStackTrace();
     }
   }
-
+  
   
   public static void writeMessage(IChannel channel, String message) {
     
