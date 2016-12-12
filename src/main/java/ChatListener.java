@@ -47,14 +47,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       // init text channel
       IChannel textChannel = event.getMessage().getChannel();
       
-      // Abort if bot is busy
-      IVoiceChannel usedChannel = Main.getInstance().isBusyInGuild(event.getMessage().getGuild());
-      if (usedChannel != null) {
-        Main.getInstance().writeMessage(textChannel,
-            "I am currently needed in Channel '" + usedChannel.getName() + "'.");
-        return;
-      }
-      
       // init sound with random
       File soundFile = getRandomAudio(politician);
       
@@ -180,6 +172,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           } else if (argument.equals("-stats")) {
             printStats(textChannel);
             return;
+          } else if (argument.equals("-leave")) {
+            Main.getInstance().removeGuildFromList(event.getMessage().getGuild());
+            return;
           } else {
             // unknown argument, print help and exit
             printHelp(textChannel);
@@ -187,6 +182,16 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           }
           
         }
+      }
+  
+      // Abort if bot is busy
+      // located here to allow parameters like '-stats' or '-help' to be displayed while bot is active
+      
+      IVoiceChannel usedChannel = Main.getInstance().isBusyInGuild(event.getMessage().getGuild());
+      if (usedChannel != null) {
+        Main.getInstance().writeMessage(textChannel,
+            "I am currently needed in Channel '" + usedChannel.getName() + "'.");
+        return;
       }
       
       if (voiceChannel == null) {
@@ -249,12 +254,13 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             "!trump [options]\n" +
             "!clinton [options]\n" +
             "!merkel [options]\n" +
-            "!airhorn, !ah [options]\n" +
             "\nOptions:\n\n" +
             "\t'-help','-h'\t\t\t\t\t\tShow this message\n" +
             "\t'-c:<channel>'\t\t\t\tSpecify voice channel to join\n" +
             "\t'-f:<pattern-of-file>'\tSpecify sound file to play. Wildcards (\\*) are supported.\n" +
-            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'"
+            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'" +
+            "\t'-stats'\t\t\t\t\t\t\tPrint a short summary of statistics" +
+            "\t'-leave'\t\t\t\t\t\t\tForces the bot to leave it's currently connected voice channel. Useful if it becomes stuck for whatever reason."
     );
     
   }

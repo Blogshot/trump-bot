@@ -136,8 +136,7 @@ public class Main {
       // Register some listeners
       dispatcher.registerListener(new ChatListener()); // Listener which reacts to commands
       dispatcher.registerListener(new TrackFinishedListener()); // Listener which reacts to finished audio
-      
-      
+            
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -180,11 +179,6 @@ public class Main {
           
           try {
             Thread.sleep(5000);
-            
-            /* I personally dont trust the GC to free memory in time.
-               Also, i need to have only alive object in order to generate meaningful dumps.
-             */
-            System.gc();
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
