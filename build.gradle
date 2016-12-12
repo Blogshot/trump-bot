@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.austinv11:Discord4j:2.6.1"
+    compile "com.github.austinv11:Discord4j:@VERSION@"
     // Allows you to log events from Discord4J
     compile "ch.qos.logback:logback-classic:1.1.7"
 }
