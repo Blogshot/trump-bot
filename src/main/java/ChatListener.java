@@ -48,9 +48,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       IChannel textChannel = event.getMessage().getChannel();
       
       // Abort if bot is busy
-      IVoiceChannel usedChannel = Main.isBusyInGuild(event.getMessage().getGuild());
+      IVoiceChannel usedChannel = Main.getInstance().isBusyInGuild(event.getMessage().getGuild());
       if (usedChannel != null) {
-        Main.writeMessage(textChannel,
+        Main.getInstance().writeMessage(textChannel,
             "I am currently needed in Channel '" + usedChannel.getName() + "'.");
         return;
       }
@@ -112,7 +112,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             if (!found) {
               
               // invalid channel, report and exit
-              Main.writeMessage(textChannel,
+              Main.getInstance().writeMessage(textChannel,
                   "I could not find the voice-channel you specified. Select one of the following:\n" +
                       getVoiceChannelList(guild));
               return;
@@ -134,7 +134,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             if (candidates.size() == 0) {
               
               // no match found, cant continue. report and exit
-              Main.writeMessage(textChannel,
+              Main.getInstance().writeMessage(textChannel,
                   "I could not find a filename matching the pattern you specified."
               );
               return;
@@ -144,7 +144,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
               // multiple matches
               String matches = fileListToString(candidates);
               
-              Main.writeMessage(textChannel,
+              Main.getInstance().writeMessage(textChannel,
                   "I found multiple audios matching your pattern. Please select one of the following:\n\n" +
                       matches
               );
@@ -168,7 +168,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             
             String matches = fileListToString(files);
             
-            Main.writeMessage(textChannel,
+            Main.getInstance().writeMessage(textChannel,
                 "Following files are available:\n\n" +
                     matches
             );
@@ -190,12 +190,12 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       }
       
       if (voiceChannel == null) {
-        Main.writeMessage(event.getMessage().getChannel(),
+        Main.getInstance().writeMessage(event.getMessage().getChannel(),
             "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
         return;
       }
       
-      Main.playAudio(voiceChannel, textChannel, soundFile);
+      Main.getInstance().playAudio(voiceChannel, textChannel, soundFile);
       
     }
   }
@@ -203,23 +203,23 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   private void printStats(IChannel textChannel) {
     
     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
-    Date startDate = new Date(Main.startedInMillis);
+    Date startDate = new Date(Main.getInstance().startedInMillis);
     
     String output =
         "Current stats:\n\n" +
             "Activated: " + readStat("played") + " times\n" +
             "Online since: " + sdf.format(startDate) + "\n" +
-            "Uptime of current session: " + Main.getUptime() + "\n" +
+            "Uptime of current session: " + Main.getInstance().getUptime() + "\n" +
             "Currently active guilds: " + readStat("guildCount");
     
-    Main.writeMessage(textChannel,
+    Main.getInstance().writeMessage(textChannel,
         output
     );
   }
   
   private String readStat(String stat) {
     
-    return Main.getStatsAsJson().get(stat).getAsString();
+    return Main.getInstance().getStatsAsJson().get(stat).getAsString();
     
   }
   
@@ -244,7 +244,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   }
   
   private void printHelp(IChannel textChannel) {
-    Main.writeMessage(textChannel,
+    Main.getInstance().writeMessage(textChannel,
         "Trump-Bot usage:\n" +
             "!trump [options]\n" +
             "!clinton [options]\n" +
@@ -298,7 +298,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         }
         
       } catch (IndexOutOfBoundsException e) {
-        Main.writeMessage(event.getMessage().getChannel(),
+        Main.getInstance().writeMessage(event.getMessage().getChannel(),
             "Error while parsing arguments: " + e.getMessage() + "\n\n" + "i=" + i + "\nmark=" + mark);
       }
     }

@@ -22,14 +22,19 @@ import java.nio.file.Paths;
 
 public class Main {
   
-  private static String token = "";
+  private static Main instance;
   
-  private static IDiscordClient client;
+  private String token = "";
+  private IDiscordClient client;
   
-  public static long played = 0;
-  public static long startedInMillis = System.currentTimeMillis();
+  public long played = 0;
+  public long startedInMillis = System.currentTimeMillis();
   
-  public static void saveStats() {
+  public static Main getInstance() {
+    return instance;
+  }
+  
+  public void saveStats() {
     JsonObject obj = new JsonObject();
     
     obj.addProperty("played", played);
@@ -53,7 +58,7 @@ public class Main {
     trump, clinton, merkel
   }
   
-  public static String getUptime() {
+  public String getUptime() {
     
     long milliseconds = System.currentTimeMillis() - startedInMillis;
     
@@ -65,7 +70,7 @@ public class Main {
     return days + "." + hours + ":" + minutes + ":" + seconds;
   }
   
-  public static IVoiceChannel isBusyInGuild(IGuild guild) {
+  public IVoiceChannel isBusyInGuild(IGuild guild) {
     
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
       
@@ -77,7 +82,7 @@ public class Main {
     return null;
   }
   
-  public static void removeGuildFromList(IGuild guild) {
+  public void removeGuildFromList(IGuild guild) {
     
     IVoiceChannel channelToLeave = null;
     
@@ -99,13 +104,26 @@ public class Main {
   }
   
   public static void main(String[] args) throws FileNotFoundException {
+    instance = new Main();
+    instance.start(args);
+  }
+  
+  public void start(String[] args) throws FileNotFoundException {
     
-    System.setOut(new PrintStream(new FileOutputStream("trump.log")));
+    boolean debug = false;
     
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
       }
+      
+      if (arg.equals("--debug")) {
+        debug = true;
+      }
+    }
+    
+    if (!debug) {
+      System.setOut(new PrintStream(new FileOutputStream("trump.log")));
     }
     
     played = getStatsAsJson().get("played").getAsLong();
@@ -132,20 +150,41 @@ public class Main {
             try {
               byte[] encoded = Files.readAllBytes(Paths.get("announcement.txt"));
               String message = new String(encoded, Charset.forName("UTF-8"));
-      
+              
               // write announcement
               for (IGuild guild : client.getGuilds()) {
+                
+                // iterate through channels until we can write to one
+                for (IChannel channel : guild.getChannels()) {
+                  
+                  // if no permissions we get an error, so try next channel
+                  try {
+                    new MessageBuilder(client)
+                        .withChannel(channel)
+                        .withContent(message)
+                        .build();
+                    
+                    // if the bot was able to write the message, break out of the loop
+                    break;
+                  } catch (Exception ignored) {
+                  }
+                }
                 writeMessage(guild.getChannels().get(0), message);
               }
-      
+              
               new File("announcement.txt").delete();
             } catch (IOException e) {
               e.printStackTrace();
             }
           }
-  
+          
           try {
             Thread.sleep(5000);
+            
+            /* I personally dont trust the GC to free memory in time.
+               Also, i need to have only alive object in order to generate meaningful dumps.
+             */
+            System.gc();
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
@@ -154,7 +193,7 @@ public class Main {
     }).start();
   }
   
-  public static JsonObject getStatsAsJson() {
+  public JsonObject getStatsAsJson() {
     try {
       byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
       String json = new String(encoded, Charset.forName("UTF-8"));
@@ -171,7 +210,7 @@ public class Main {
   }
   
   // Join channel and play specified audio
-  public static void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile) {
+  public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile) {
     // Join channel
     try {
       voiceChannel.join();
@@ -185,7 +224,7 @@ public class Main {
       
     } catch (MissingPermissionsException e) {
       e.printStackTrace();
-      Main.writeMessage(textChannel,
+      writeMessage(textChannel,
           "I hate to tell you this, but I have no permission to join this channel.");
     } catch (Exception e) {
       e.printStackTrace();
@@ -193,7 +232,7 @@ public class Main {
   }
   
   
-  public static void writeMessage(IChannel channel, String message) {
+  public void writeMessage(IChannel channel, String message) {
     
     try {
       new MessageBuilder(client)
@@ -206,15 +245,15 @@ public class Main {
     
   }
   
-  private static IDiscordClient getClient(String token) throws Exception { // Returns an instance of the Discord client
+  private IDiscordClient getClient(String token) throws Exception { // Returns an instance of the Discord client
     
-    if (Main.client == null) {
+    if (client == null) {
       ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
       clientBuilder.withToken(token); // Adds the login info to the builder
       
       return clientBuilder.login(); // Creates the client instance and logs the client in
       
     } else
-      return Main.client;
+      return client;
   }
 }

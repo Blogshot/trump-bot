@@ -7,11 +7,11 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
   public void handle(TrackFinishEvent event) { // This is called when the ReadyEvent is dispatched
   
     // Leave current channel after audio finished and set it to null again
-    Main.removeGuildFromList(event.getPlayer().getGuild());
+    Main.getInstance().removeGuildFromList(event.getPlayer().getGuild());
     
     // Update stats
-    Main.played++;
-    Main.saveStats();
+    Main.getInstance().played++;
+    Main.getInstance().saveStats();
     
   }
 }
