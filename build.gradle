@@ -12,8 +12,11 @@ repositories {
     }
 }
 
+
 dependencies {
-    compile "com.github.austinv11:Discord4j:@VERSION@"
+    compile "com.github.austinv11:Discord4j:websocket-rewrite-SNAPSHOT"
     // Allows you to log events from Discord4J
     compile "ch.qos.logback:logback-classic:1.1.7"
+
+    compile 'com.google.code.gson:gson:2.8'
 }
