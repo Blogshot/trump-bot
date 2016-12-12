@@ -258,8 +258,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             "\t'-help','-h'\t\t\t\t\t\tShow this message\n" +
             "\t'-c:<channel>'\t\t\t\tSpecify voice channel to join\n" +
             "\t'-f:<pattern-of-file>'\tSpecify sound file to play. Wildcards (\\*) are supported.\n" +
-            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'" +
-            "\t'-stats'\t\t\t\t\t\t\tPrint a short summary of statistics" +
+            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'\n" +
+            "\t'-stats'\t\t\t\t\t\t\tPrint a short summary of statistics\n" +
             "\t'-leave'\t\t\t\t\t\t\tForces the bot to leave it's currently connected voice channel. Useful if it becomes stuck for whatever reason."
     );
     
