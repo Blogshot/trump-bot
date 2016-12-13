@@ -183,7 +183,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           
         }
       }
-  
+      
       // Abort if bot is busy
       // located here to allow parameters like '-stats' or '-help' to be displayed while bot is active
       
@@ -210,12 +210,13 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
     Date startDate = new Date(Main.getInstance().startedInMillis);
     
-    String output =
-        "Current stats:\n\n" +
-            "Activated: " + readStat("played") + " times\n" +
-            "Online since: " + sdf.format(startDate) + "\n" +
-            "Uptime of current session: " + Main.getInstance().getUptime() + "\n" +
-            "Currently active guilds: " + readStat("guildCount");
+    String output = "Current stats:\n" +
+        "```" +
+        "Activated:                \t" + readStat("played") + " times\n" +
+        "Online since:             \t" + sdf.format(startDate) + "\n" +
+        "Uptime of current session:\t" + Main.getInstance().getUptime() + "\n" +
+        "Currently active guilds:  \t" + readStat("guildCount") +
+        "```";
     
     Main.getInstance().writeMessage(textChannel,
         output
@@ -249,18 +250,20 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   }
   
   private void printHelp(IChannel textChannel) {
+    
+    
     Main.getInstance().writeMessage(textChannel,
-        "Trump-Bot usage:\n" +
-            "!trump [options]\n" +
-            "!clinton [options]\n" +
-            "!merkel [options]\n" +
+        "Trump-Bot usage:\n```\n" +
+            "!trump  \t[options]\n" +
+            "!clinton\t[options]\n" +
+            "!merkel \t[options]\n" +
             "\nOptions:\n\n" +
-            "\t'-help','-h'\t\t\t\t\t\tShow this message\n" +
-            "\t'-c:<channel>'\t\t\t\tSpecify voice channel to join\n" +
-            "\t'-f:<pattern-of-file>'\tSpecify sound file to play. Wildcards (\\*) are supported.\n" +
-            "\t'-sounds'\t\t\t\t\t\t\tList all available sound files. Equals '-f:\\*'\n" +
-            "\t'-stats'\t\t\t\t\t\t\tPrint a short summary of statistics\n" +
-            "\t'-leave'\t\t\t\t\t\t\tForces the bot to leave it's currently connected voice channel. Useful if it becomes stuck for whatever reason."
+            "  -help, -h   \tShow this message\n" +
+            "  -c:<channel>\tSpecify voice channel to join\n" +
+            "  -f:<pattern>\tSpecify sound file to play. Wildcard: *\n" +
+            "  -sounds     \tList all available sound files\n" +
+            "  -stats      \tPrint a short summary of statistics\n" +
+            "  -leave      \tForce-leave the current channel```"
     );
     
   }
