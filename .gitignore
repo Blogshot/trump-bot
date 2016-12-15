@@ -1,8 +1,3 @@
-# Gradle
-.gradle
-gradle
-gradlew*
-
 # Build
 build/
 trump.log
@@ -10,10 +5,3 @@ stats.json
 
 # IDEA
 .idea
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
