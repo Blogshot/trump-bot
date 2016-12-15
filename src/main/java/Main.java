@@ -28,7 +28,7 @@ public class Main {
   private IDiscordClient client;
   
   public long played = 0;
-  public long startedInMillis = System.currentTimeMillis();
+  public final long startedInMillis = System.currentTimeMillis();
   
   public static Main getInstance() {
     return instance;
@@ -144,50 +144,6 @@ public class Main {
       e.printStackTrace();
     }
     
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        while (true) {
-          if (new File("announcement.txt").exists()) {
-            try {
-              byte[] encoded = Files.readAllBytes(Paths.get("announcement.txt"));
-              String message = new String(encoded, Charset.forName("UTF-8"));
-              
-              // write announcement
-              for (IGuild guild : client.getGuilds()) {
-                
-                // iterate through channels until we can write to one
-                for (IChannel channel : guild.getChannels()) {
-                  
-                  // if no permissions we get an error, so try next channel
-                  try {
-                    new MessageBuilder(client)
-                        .withChannel(channel)
-                        .withContent(message)
-                        .build();
-                    
-                    // if the bot was able to write the message, break out of the loop
-                    break;
-                  } catch (Exception ignored) {
-                  }
-                }
-                writeMessage(guild.getChannels().get(0), message);
-              }
-              
-              new File("announcement.txt").delete();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
-          
-          try {
-            Thread.sleep(5000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
   }
   
   public JsonObject getStatsAsJson() {
@@ -212,6 +168,7 @@ public class Main {
     try {
       voiceChannel.join();
       
+      // load file as inputstream
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
       
       // feed the player with audio
