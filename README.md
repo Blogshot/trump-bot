@@ -9,12 +9,13 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 |Command|Action|
 |:---|:---|
 |!trump, !clinton, !merkel|Invoke the bot with corresponding set of audio|
-|-help, -h|Show help-message|
+|-help, -h|Show this message|
 |-c:\<channel>|Send the bot to a specified channel|
-|-f:\<pattern-of-file>|Specify sound file to use. Wildcards (*) are supported|
-|-sounds|List all available sound files. Equals '-f:*'|
-|-stats|Print misc. statistics|
-
+|-f:\<pattern>|Specify sound file to use. Wildcard: *|
+|-sounds|List all available sound files|
+|-stats|Print a short summary of statistics|
+|-leave|Force-leave the current channel|
+ 	
 #### Examples
 
 Play 'let-em-talk.mp3' by using wildcards:  
