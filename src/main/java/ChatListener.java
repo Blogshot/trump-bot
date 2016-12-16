@@ -173,7 +173,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             printStats(textChannel);
             return;
           } else if (argument.equals("-leave")) {
-            Main.getInstance().removeGuildFromList(event.getMessage().getGuild());
+            Main.getInstance().leaveVoiceChannel(event.getMessage().getGuild());
             return;
           } else {
             // unknown argument, print help and exit

@@ -5,11 +5,11 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
   
   @Override
   public void handle(TrackFinishEvent event) { // This is called when the ReadyEvent is dispatched
-  
+    
     // Leave current channel after audio finished and set it to null again
     System.out.println("Leaving voice channel.");
     
-    Main.getInstance().removeGuildFromList(event.getPlayer().getGuild());
+    Main.getInstance().leaveVoiceChannel(event.getPlayer().getGuild());
   
     System.out.println("Left voice channel.");
     

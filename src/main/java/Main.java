@@ -85,23 +85,17 @@ public class Main {
     return null;
   }
   
-  public void removeGuildFromList(IGuild guild) {
-    
-    IVoiceChannel channelToLeave = null;
+  public void leaveVoiceChannel(IGuild guild) {
     
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
       
       if (voiceChannel.getGuild().getID().equals(guild.getID())) {
         
-        channelToLeave = voiceChannel;
+        voiceChannel.leave();
         break;
         
       }
       
-    }
-    
-    if (channelToLeave != null) {
-      channelToLeave.leave();
     }
     
   }
@@ -113,20 +107,10 @@ public class Main {
   
   public void start(String[] args) throws FileNotFoundException {
     
-    boolean debug = false;
-    
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
       }
-      
-      if (arg.equals("--debug")) {
-        debug = true;
-      }
-    }
-    
-    if (!debug) {
-      System.setOut(new PrintStream(new FileOutputStream("trump.log")));
     }
     
     played = getStatsAsJson().get("played").getAsLong();
@@ -139,7 +123,8 @@ public class Main {
       // Register some listeners
       dispatcher.registerListener(new ChatListener()); // Listener which reacts to commands
       dispatcher.registerListener(new TrackFinishedListener()); // Listener which reacts to finished audio
-            
+      
+      
     } catch (Exception e) {
       new ErrorReporter(client, e).report();
     }
