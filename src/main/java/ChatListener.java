@@ -307,8 +307,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         }
         
       } catch (IndexOutOfBoundsException e) {
-        Main.getInstance().writeMessage(event.getMessage().getChannel(),
-            "Error while parsing arguments: " + e.getMessage() + "\n\n" + "i=" + i + "\nmark=" + mark);
+        new ErrorReporter(event.getClient(), e).report();
       }
     }
     

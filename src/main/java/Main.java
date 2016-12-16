@@ -52,8 +52,8 @@ public class Main {
       out.print(output);
       out.close();
       
-    } catch (FileNotFoundException e1) {
-      e1.printStackTrace();
+    } catch (FileNotFoundException e) {
+      new ErrorReporter(client, e).report();
     }
   }
   
@@ -141,7 +141,7 @@ public class Main {
       dispatcher.registerListener(new TrackFinishedListener()); // Listener which reacts to finished audio
             
     } catch (Exception e) {
-      e.printStackTrace();
+      new ErrorReporter(client, e).report();
     }
     
   }
@@ -166,8 +166,13 @@ public class Main {
   public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile) {
     // Join channel
     try {
+      System.out.println("Joining voice channel.");
+  
       voiceChannel.join();
-      
+  
+      System.out.println("Joined voice channel.");
+  
+  
       // load file as inputstream
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
       
@@ -177,14 +182,13 @@ public class Main {
       player.queue(audioInputStream);
       
     } catch (MissingPermissionsException e) {
-      e.printStackTrace();
       writeMessage(textChannel,
-          "I hate to tell you this, but I have no permission to join this channel.");
+          "I have no permission to join this channel.");
     } catch (Exception e) {
-      e.printStackTrace();
+      new ErrorReporter(client, e).report();
     }
   }
-  
+
   
   public void writeMessage(IChannel channel, String message) {
     
@@ -193,8 +197,10 @@ public class Main {
           .withChannel(channel)
           .withContent(message)
           .build();
-    } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
-      e.printStackTrace();
+    } catch (RateLimitException ignored) {
+      
+    } catch (MissingPermissionsException | DiscordException e) {
+      new ErrorReporter(client, e).report();
     }
     
   }
