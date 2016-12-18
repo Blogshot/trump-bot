@@ -158,6 +158,7 @@ public class Main {
       System.out.println("Joined voice channel.");
   
   
+      System.out.println("Playing file " + soundFile.getName());
       // load file as inputstream
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
       
