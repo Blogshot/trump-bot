@@ -6,6 +6,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -29,6 +30,12 @@ public class Main {
   
   public long played = 0;
   public final long startedInMillis = System.currentTimeMillis();
+  public static int[] milestones = {
+      10000,
+      25000,
+      50000,
+      100000
+  };
   
   public static Main getInstance() {
     return instance;
@@ -148,16 +155,16 @@ public class Main {
   }
   
   // Join channel and play specified audio
-  public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile) {
+  public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile, IUser user) {
     // Join channel
     try {
       System.out.println("Joining voice channel.");
-  
+      
       voiceChannel.join();
-  
+      
       System.out.println("Joined voice channel.");
-  
-  
+      
+      
       System.out.println("Playing file " + soundFile.getName());
       // load file as inputstream
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
@@ -166,6 +173,18 @@ public class Main {
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
       
       player.queue(audioInputStream);
+  
+      for (int milestone : milestones) {
+        
+        // if the sound is the x'th sound
+        if (played == milestone -1) {
+  
+          writeMessage(textChannel,
+              user.getName() + " just broke the " + milestone + "-milestone! Congratulations, have a friendly handshake! :handshake:");
+          
+        }
+        
+      }
       
     } catch (MissingPermissionsException e) {
       writeMessage(textChannel,
@@ -174,7 +193,7 @@ public class Main {
       new ErrorReporter(client, e).report();
     }
   }
-
+  
   
   public void writeMessage(IChannel channel, String message) {
     

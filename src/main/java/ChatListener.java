@@ -199,8 +199,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
         return;
       }
-      
-      Main.getInstance().playAudio(voiceChannel, textChannel, soundFile);
+            
+      Main.getInstance().playAudio(voiceChannel, textChannel, soundFile, event.getMessage().getAuthor());
       
     }
   }
