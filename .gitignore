@@ -2,6 +2,7 @@
 build/
 trump.log
 stats.json
+server-update
 
 # IDEA
 .idea
