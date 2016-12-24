@@ -187,7 +187,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             return;
           } else if (argument.startsWith("-contact:")) {
             String value = argument.substring(argument.indexOf("-contact:") + 9);
-            new ErrorReporter(event.getClient()).report(value);
+            new ErrorReporter(event.getClient()).report(event.getMessage().getAuthor().getName() + ": " + value);
             return;
           } else if (argument.equals("-leave")) {
             Main.getInstance().leaveVoiceChannel(event.getMessage().getGuild());
