@@ -8,26 +8,31 @@ import java.io.StringWriter;
 public class ErrorReporter {
   
   private IDiscordClient client;
-  private Exception e;
-
-  public ErrorReporter(IDiscordClient client, Exception e) {
+  
+  public ErrorReporter(IDiscordClient client) {
     this.client = client;
-    this.e = e;
   }
   
-  public void report() {
-    
+  public void report(Exception e) {
+    send(exceptionToString(e));
+  }
+  
+  public void report(String message) {
+    send(message);
+  }
+  
+  private void send(String message) {
+  
     try {
       IPrivateChannel privateChannel = client.getOrCreatePMChannel(client.getUserByID("197995146187505665"));
-      
+    
       new MessageBuilder(client)
           .withChannel(privateChannel)
-          .withContent(exceptionToString(e))
+          .withContent(message)
           .build();
-      
+    
     } catch (Exception ignored) {    }
-  
-  
+    
   }
   
   

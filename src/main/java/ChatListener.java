@@ -13,6 +13,19 @@ import java.util.Random;
 
 public class ChatListener implements IListener<MessageReceivedEvent> {
   
+  String helptext = "Trump-Bot usage:\n```\n" +
+      "!trump  \t[options]\n" +
+      "!clinton\t[options]\n" +
+      "!merkel \t[options]\n" +
+      "\nOptions:\n\n" +
+      "  -help, -h      \tShow this message\n" +
+      "  -c:<channel>   \tSpecify voice channel to join\n" +
+      "  -f:<pattern>   \tSpecify sound file to play. Wildcard: *\n" +
+      "  -sounds        \tList all available sound files\n" +
+      "  -stats         \tPrint a short summary of statistics\n" +
+      "  -leave         \tForce-leave the current channel\n + " +
+      "  -contact:<text>\tContact the creator (bugs, feedback, etc)```";
+  
   @Override
   public void handle(MessageReceivedEvent event) {
     
@@ -172,12 +185,16 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           } else if (argument.equals("-stats")) {
             printStats(textChannel);
             return;
+          } else if (argument.startsWith("-contact:")) {
+            String value = argument.substring(argument.indexOf("-contact:") + 9);
+            new ErrorReporter(event.getClient()).report(value);
+            return;
           } else if (argument.equals("-leave")) {
             Main.getInstance().leaveVoiceChannel(event.getMessage().getGuild());
             return;
           } else {
             // unknown argument, print help and exit
-            printHelp(textChannel);
+            printHelp("You entered an unknown argument.", textChannel);
             return;
           }
           
@@ -249,22 +266,17 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     return matches.trim();
   }
   
+  private void printHelp(String intro, IChannel textChannel) {
+    
+    
+    Main.getInstance().writeMessage(textChannel, intro + "\n" + helptext);
+    
+  }
+  
   private void printHelp(IChannel textChannel) {
     
     
-    Main.getInstance().writeMessage(textChannel,
-        "Trump-Bot usage:\n```\n" +
-            "!trump  \t[options]\n" +
-            "!clinton\t[options]\n" +
-            "!merkel \t[options]\n" +
-            "\nOptions:\n\n" +
-            "  -help, -h   \tShow this message\n" +
-            "  -c:<channel>\tSpecify voice channel to join\n" +
-            "  -f:<pattern>\tSpecify sound file to play. Wildcard: *\n" +
-            "  -sounds     \tList all available sound files\n" +
-            "  -stats      \tPrint a short summary of statistics\n" +
-            "  -leave      \tForce-leave the current channel```"
-    );
+    Main.getInstance().writeMessage(textChannel, helptext);
     
   }
   
@@ -307,7 +319,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         }
         
       } catch (IndexOutOfBoundsException e) {
-        new ErrorReporter(event.getClient(), e).report();
+        new ErrorReporter(event.getClient()).report(e);
       }
     }
     

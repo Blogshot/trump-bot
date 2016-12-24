@@ -32,10 +32,18 @@ public class Main {
   public final long startedInMillis = System.currentTimeMillis();
   public static int[] milestones = {
       10000,
+      15000,
+      20000,
       25000,
+      30000,
+      40000,
       50000,
+      50000,
+      75000,
       100000
   };
+  
+  
   
   public static Main getInstance() {
     return instance;
@@ -60,7 +68,7 @@ public class Main {
       out.close();
       
     } catch (FileNotFoundException e) {
-      new ErrorReporter(client, e).report();
+      new ErrorReporter(client).report(e);
     }
   }
   
@@ -133,7 +141,7 @@ public class Main {
       
       
     } catch (Exception e) {
-      new ErrorReporter(client, e).report();
+      new ErrorReporter(client).report(e);
     }
     
   }
@@ -190,7 +198,7 @@ public class Main {
       writeMessage(textChannel,
           "I have no permission to join this channel.");
     } catch (Exception e) {
-      new ErrorReporter(client, e).report();
+      new ErrorReporter(client).report(e);
     }
   }
   
@@ -205,7 +213,7 @@ public class Main {
     } catch (RateLimitException ignored) {
       
     } catch (MissingPermissionsException | DiscordException e) {
-      new ErrorReporter(client, e).report();
+      new ErrorReporter(client).report(e);
     }
     
   }
