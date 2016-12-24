@@ -23,7 +23,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       "  -f:<pattern>   \tSpecify sound file to play. Wildcard: *\n" +
       "  -sounds        \tList all available sound files\n" +
       "  -stats         \tPrint a short summary of statistics\n" +
-      "  -leave         \tForce-leave the current channel\n + " +
+      "  -leave         \tForce-leave the current channel\n" +
       "  -contact:<text>\tContact the creator (bugs, feedback, etc)```";
   
   @Override
