@@ -5,11 +5,10 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ChatListener implements IListener<MessageReceivedEvent> {
   
@@ -61,7 +60,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       IChannel textChannel = event.getMessage().getChannel();
       
       // init sound with random
-      File soundFile = getRandomAudio(politician);
+      ArrayList<URL> soundFiles = new ArrayList<>();
       
       // init voice channel with author's
       IVoiceChannel voiceChannel = null;
@@ -134,33 +133,33 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             String pattern = ("\\Q" + value + "\\E").replace("*", "\\E.*\\Q");
             
             // get list of matching files
-            ArrayList<File> candidates = getAudio(politician, pattern);
-            
-            if (candidates.size() == 0) {
+            ArrayList<URL> candidates = getAudio(politician, pattern);
               
-              // no match found, cant continue. report and exit
-              Main.getInstance().writeMessage(textChannel,
-                  "I could not find a filename matching the pattern you specified."
-              );
-              return;
-              
-            } else if (candidates.size() > 1) {
-              
-              // multiple matches
-              String matches = fileListToString(candidates);
-              
-              Main.getInstance().writeMessage(textChannel,
-                  "I found multiple audios matching your pattern. Please select one of the following:\n\n" +
-                      matches
-              );
-              return;
-              
-            } else {
-              
-              // set the only match as desired audio
-              soundFile = candidates.get(0);
-              
-            }
+              if (candidates.size() == 0) {
+                
+                // no match found, cant continue. report and exit
+                Main.getInstance().writeMessage(textChannel,
+                    "I could not find a filename matching the pattern you specified."
+                );
+                return;
+                
+              } else if (candidates.size() > 1) {
+                
+                // multiple matches
+                String matches = fileListToString(candidates);
+                
+                Main.getInstance().writeMessage(textChannel,
+                    "I found multiple audios matching your pattern. Please select one of the following:\n\n" +
+                        matches
+                );
+                return;
+                
+              } else {
+                
+                // set the only match as desired audio
+                soundFiles.add(candidates.get(0));
+                
+              }
             
             /*
               list all sounds
@@ -216,8 +215,12 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             "Look, you have to be in a voicechannel (or specify one by adding '-c:<name of channel>' to do this.");
         return;
       }
-            
-      Main.getInstance().playAudio(voiceChannel, textChannel, soundFile, event.getMessage().getAuthor());
+      
+      if (soundFiles.isEmpty()) {
+          soundFiles.add(getRandomAudio(politician));
+      }
+      
+      Main.getInstance().playAudio(voiceChannel, textChannel, soundFiles, event.getMessage().getAuthor());
       
     }
   }
@@ -256,11 +259,11 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     return matches.trim();
   }
   
-  private String fileListToString(ArrayList<File> files) {
+  private String fileListToString(ArrayList<URL> files) {
     // multiple matches
     String matches = "";
-    for (File file : files) {
-      matches += file.getName() + "\n";
+    for (URL file : files) {
+      matches += file + "\n";
     }
     
     return matches.trim();
@@ -327,12 +330,12 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     return args;
   }
   
-  private ArrayList<File> getAudio(Main.Politician politician, String pattern) {
+  private ArrayList<URL> getAudio(Main.Politician politician, String pattern) {
     
     File audio = new File("audio/" + politician.name());
     
     File[] files = audio.listFiles();
-    ArrayList<File> candidates = new ArrayList<>();
+    ArrayList<URL> candidates = new ArrayList<>();
     
     // iterate through available files to find matching ones
     if (files != null) {
@@ -340,7 +343,11 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         
         // get matches
         if (candidate.getName().matches(pattern)) {
-          candidates.add(candidate);
+          try {
+            candidates.add(candidate.toURI().toURL());
+          } catch (MalformedURLException e) {
+            e.printStackTrace();
+          }
         }
         
       }
@@ -349,22 +356,27 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     return candidates;
   }
   
-  private File getRandomAudio(Main.Politician politician) {
+  private URL getRandomAudio(Main.Politician politician) {
     
     // set path for selected politician
     File audio = new File("audio/" + politician.name());
     
-    File soundFile = null;
+    URL soundFile = null;
     
     // pick a random audio
     File[] files = audio.listFiles();
     
     if (files != null && files.length > 0) {
       int random = new Random().nextInt(files.length);
-      
-      soundFile = files[random];
+  
+      try {
+        soundFile = files[random].toURI().toURL();
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
     }
     
     return soundFile;
   }
+  
 }

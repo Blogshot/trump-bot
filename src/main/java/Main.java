@@ -14,12 +14,13 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.audio.AudioPlayer;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main {
   
@@ -163,7 +164,7 @@ public class Main {
   }
   
   // Join channel and play specified audio
-  public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, File soundFile, IUser user) {
+  public void playAudio(IVoiceChannel voiceChannel, IChannel textChannel, ArrayList<URL> soundFiles, IUser user) {
     // Join channel
     try {
       System.out.println("Joining voice channel.");
@@ -171,17 +172,17 @@ public class Main {
       voiceChannel.join();
       
       System.out.println("Joined voice channel.");
-      
-      
-      System.out.println("Playing file " + soundFile.getName());
-      // load file as inputstream
-      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-      
-      // feed the player with audio
+  
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
       
-      player.queue(audioInputStream);
-  
+      for (URL soundFile : soundFiles) {
+        
+        // feed the player with audio
+        System.out.println(soundFile);
+        
+        player.queue(soundFile);
+      }
+      
       for (int milestone : milestones) {
         
         // if the sound is the x'th sound

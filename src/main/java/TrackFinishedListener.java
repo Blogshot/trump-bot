@@ -10,13 +10,14 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
     System.out.println("Finished playing audio.\nLeaving voice channel.");
     
     Main.getInstance().leaveVoiceChannel(event.getPlayer().getGuild());
-  
+    
     System.out.println("Left voice channel.");
     
     // Update stats
     Main.getInstance().played++;
     Main.getInstance().saveStats();
-  
+    
     System.out.println("Increased 'played' and saved stats.");
+    
   }
 }
