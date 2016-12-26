@@ -15,8 +15,8 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 |-sounds|List all available sound files|
 |-stats|Print a short summary of statistics|
 |-leave|Force-leave the current channel|
-|-contact:<text>|Contact the creator (bugs, feedback, etc)|
- 	
+|-contact:\<text\>|Contact the creator (bugs, feedback, etc)|
+
 #### Examples
 
 Play 'let-em-talk.mp3' by using wildcards:  
