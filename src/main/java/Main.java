@@ -188,6 +188,7 @@ public class Main {
         // if the sound is the x'th sound
         if (played == milestone -1) {
   
+          System.out.println("Milestone reached!");
           writeMessage(textChannel,
               user.getName() + " just broke the " + milestone + "-milestone! Congratulations, have a friendly handshake! :handshake:");
           
