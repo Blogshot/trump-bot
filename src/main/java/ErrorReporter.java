@@ -5,19 +5,19 @@ import sx.blah.discord.util.MessageBuilder;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class ErrorReporter {
+class ErrorReporter {
 
   private IDiscordClient client;
 
-  public ErrorReporter(IDiscordClient client) {
+  ErrorReporter(IDiscordClient client) {
     this.client = client;
   }
 
-  public void report(Exception e) {
+  void report(Exception e) {
     send(exceptionToString(e));
   }
 
-  public void report(String message) {
+  void report(String message) {
     send(message);
   }
 

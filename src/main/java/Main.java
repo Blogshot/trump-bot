@@ -5,10 +5,7 @@ import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
 
@@ -22,17 +19,17 @@ import java.util.ArrayList;
 
 public class Main {
 
-  public static int[] milestones = {
+  private static int[] milestones = {
     10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
   };
   private static Main instance;
-  public final long startedInMillis = System.currentTimeMillis();
-  public long played = 0;
+  final long startedInMillis = System.currentTimeMillis();
+  long played = 0;
   private long guilds = 0;
   private String token = "";
   private IDiscordClient client;
 
-  public static Main getInstance() {
+  static Main getInstance() {
     return instance;
   }
 
@@ -41,7 +38,7 @@ public class Main {
     instance.start(args);
   }
 
-  public void saveStats() {
+  void saveStats() {
     JsonObject obj = new JsonObject();
 
     obj.addProperty("played", played);
@@ -64,7 +61,7 @@ public class Main {
     }
   }
 
-  public String getUptime() {
+  String getUptime() {
 
     long milliseconds = System.currentTimeMillis() - startedInMillis;
 
@@ -76,7 +73,7 @@ public class Main {
     return days + "." + hours + ":" + minutes + ":" + seconds;
   }
 
-  public IVoiceChannel isBusyInGuild(IGuild guild) {
+  IVoiceChannel isBusyInGuild(IGuild guild) {
 
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
 
@@ -87,7 +84,7 @@ public class Main {
     return null;
   }
 
-  public void leaveVoiceChannel(IGuild guild) {
+  void leaveVoiceChannel(IGuild guild) {
 
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
 
@@ -99,7 +96,7 @@ public class Main {
     }
   }
 
-  public void start(String[] args) throws FileNotFoundException {
+  private void start(String[] args) throws FileNotFoundException {
 
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
@@ -135,7 +132,7 @@ public class Main {
     }
   }
 
-  public JsonObject getStatsAsJson() {
+  JsonObject getStatsAsJson() {
     try {
       byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
       String json = new String(encoded, Charset.forName("UTF-8"));
@@ -152,7 +149,7 @@ public class Main {
   }
 
   // Join channel and play specified audio
-  public void playAudio(
+  void playAudio(
       IVoiceChannel voiceChannel, IChannel textChannel, ArrayList<URL> soundFiles, IUser user) {
     // Join channel
     try {
@@ -194,7 +191,7 @@ public class Main {
     }
   }
 
-  public void writeMessage(IChannel channel, String message) {
+  void writeMessage(IChannel channel, String message) {
 
     try {
       new MessageBuilder(client).withChannel(channel).withContent(message).build();
