@@ -7,7 +7,7 @@ import java.io.StringWriter;
 
 class ErrorReporter {
 
-  private IDiscordClient client;
+  final private IDiscordClient client;
 
   ErrorReporter(IDiscordClient client) {
     this.client = client;

@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-public class ChatListener implements IListener<MessageReceivedEvent> {
+class ChatListener implements IListener<MessageReceivedEvent> {
 
-  private String helptext =
+  private final String helptext =
       "Trump-Bot usage:\n```\n"
           + "!trump  \t[options]\n"
           + "!clinton\t[options]\n"

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class Main {
 
-  private static int[] milestones = {
+  private final static int[] milestones = {
     10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
   };
   private static Main instance;
@@ -96,12 +96,13 @@ public class Main {
     }
   }
 
-  private void start(String[] args) throws FileNotFoundException {
+  private void start(String[] args) {
 
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
       }
+      //noinspection StatementWithEmptyBody
       if (arg.equals("--debug")) {}
     }
 
