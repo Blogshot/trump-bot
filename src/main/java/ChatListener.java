@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ChatListener implements IListener<MessageReceivedEvent> {
   
-  String helptext = "Trump-Bot usage:\n```\n" +
+  private String helptext = "Trump-Bot usage:\n```\n" +
       "!trump  \t[options]\n" +
       "!clinton\t[options]\n" +
       "!merkel \t[options]\n" +
@@ -272,7 +272,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   private void printHelp(String intro, IChannel textChannel) {
     
     
-    Main.getInstance().writeMessage(textChannel, intro + "\n" + helptext);
+    Main.getInstance().writeMessage(textChannel, intro + "\n\n" + helptext);
     
   }
   
