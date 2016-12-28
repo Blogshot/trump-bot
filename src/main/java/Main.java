@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -8,10 +9,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
 
 import java.io.FileNotFoundException;
@@ -30,6 +28,8 @@ public class Main {
   private IDiscordClient client;
   
   public long played = 0;
+  public long guilds = 0;
+  
   public final long startedInMillis = System.currentTimeMillis();
   public static int[] milestones = {
       10000,
@@ -43,7 +43,6 @@ public class Main {
       75000,
       100000
   };
-  
   
   
   public static Main getInstance() {
@@ -127,12 +126,23 @@ public class Main {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
       }
+      if (arg.equals("--debug")) {
+      }
     }
+  
+    // disable warning for missing permissions on text-channels
+    Discord4J.disableChannelWarnings();
     
     played = getStatsAsJson().get("played").getAsLong();
+    guilds = getStatsAsJson().get("guildCount").getAsLong();
     
     try {
       client = getClient(token); // Gets the client object
+      
+      // no caching of messages to reduce RAM-usage
+      MessageList.setEfficiency(client, MessageList.EfficiencyLevel.HIGH);
+      
+      client.login();
       
       EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher instance for this client instance
       
@@ -144,7 +154,6 @@ public class Main {
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
     }
-    
   }
   
   public JsonObject getStatsAsJson() {
@@ -172,7 +181,7 @@ public class Main {
       voiceChannel.join();
       
       System.out.println("Joined voice channel.");
-  
+      
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
       
       for (URL soundFile : soundFiles) {
@@ -186,8 +195,8 @@ public class Main {
       for (int milestone : milestones) {
         
         // if the sound is the x'th sound
-        if (played == milestone -1) {
-  
+        if (played == milestone - 1) {
+          
           System.out.println("Milestone reached!");
           writeMessage(textChannel,
               user.getName() + " just broke the " + milestone + "-milestone! Congratulations, have a friendly handshake! :handshake:");
@@ -223,10 +232,21 @@ public class Main {
   private IDiscordClient getClient(String token) throws Exception { // Returns an instance of the Discord client
     
     if (client == null) {
+      /*
+       0-2500 guilds = 0 + 1
+       2501-5000 guilds = 1 + 1
+       5001-7500 guilds = 2 + 1
+       ...
+      */
+      // subtract some guilds to leave a buffer for a restart
+      int shards = (int) ((guilds-500) / 2500) + 1;
+
       ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
       clientBuilder.withToken(token); // Adds the login info to the builder
+      clientBuilder.withShards(shards);
+
       
-      return clientBuilder.login(); // Creates the client instance and logs the client in
+      return clientBuilder.build(); // Creates the client instance
       
     } else
       return client;
