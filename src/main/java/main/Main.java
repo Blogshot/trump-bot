@@ -3,6 +3,9 @@ package main;
 import com.google.gson.*;
 import listener.ChatListener;
 import listener.TrackFinishedListener;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -131,12 +134,16 @@ public class Main {
 
   private void start(String[] args) {
 
+    boolean debug = false;
+    
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
       }
       //noinspection StatementWithEmptyBody
-      if (arg.equals("--debug")) {}
+      if (arg.equals("--debug")) {
+        debug = true;
+      }
       if (arg.startsWith("--adminID=")) {
         adminID = arg.replace("--adminID=", "");
         System.out.println("Admin-ID set to " + adminID);
@@ -145,7 +152,14 @@ public class Main {
 
     // disable warning for missing permissions on text-channels
     Discord4J.disableChannelWarnings();
-
+  
+    Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    if (debug) {
+      root.setLevel(Level.DEBUG);
+    } else {
+      root.setLevel(Level.INFO);
+    }
+    
     played = getStatsAsJson().get("played").getAsLong();
     guilds = getStatsAsJson().get("guildCount").getAsLong();
 

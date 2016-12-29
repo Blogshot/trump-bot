@@ -11,7 +11,7 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
 
     // Leave current channel after audio finished
     System.out.println("Finished playing audio.\nLeaving voice channel.");
-
+    
     Main.getInstance().leaveVoiceChannel(event.getPlayer().getGuild());
 
     System.out.println("Left voice channel.");
