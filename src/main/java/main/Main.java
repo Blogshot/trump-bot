@@ -230,18 +230,13 @@ public class Main {
       IVoiceChannel voiceChannel, IChannel textChannel, ArrayList<URL> soundFiles, IUser user) {
     // Join channel
     try {
-      System.out.println("Joining voice channel.");
-
       voiceChannel.join();
-
-      System.out.println("Joined voice channel.");
-
+      
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
 
       for (URL soundFile : soundFiles) {
-
         // feed the player with audio
-        System.out.println(soundFile);
+        System.out.println("Queuing " + soundFile);
 
         player.queue(soundFile);
       }
