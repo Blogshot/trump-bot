@@ -35,8 +35,6 @@ public class Main {
   // todo
   /*
   
-  check if a user has the right to access a ticket
-  
   rework parameter-handling
   
   per-server-configuration (what options are needed?)
