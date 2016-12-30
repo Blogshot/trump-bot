@@ -87,19 +87,22 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         if (argument.equals("--list-tickets")) {
           new ErrorReporter(event.getClient())
               .report(Main.getInstance().supportRequests.createReport());
+          return;
         } else if (argument.startsWith("--close-ticket ")) {
           String value = argument.replace("--close-ticket ", "");
+          
+          String[] ticket_ids = value.split(" ");
 
-          int ticket_id;
-
-          try {
-            ticket_id = Integer.parseInt(value);
-          } catch (NumberFormatException e) {
-            new ErrorReporter(event.getClient()).report(e);
-            return;
+          for (String ticket_id : ticket_ids) {
+            try {
+              int id = Integer.parseInt(ticket_id);
+    
+              Main.getInstance().supportRequests.removeID(id);
+            } catch (NumberFormatException e) {
+              new ErrorReporter(event.getClient()).report(e);
+              return;
+            }
           }
-
-          Main.getInstance().supportRequests.removeID(ticket_id);
           Main.getInstance().saveSupportRequests();
 
         } else if (argument.startsWith("--reply-ticket ")) {
@@ -131,7 +134,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
   }
 
   private String[] getAdminArguments(String message) {
-
     return message.replace(" --", " ----").split(" --");
   }
 
