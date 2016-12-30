@@ -13,7 +13,7 @@ import sx.blah.discord.util.RateLimitException;
 public class SupportRequest {
 
   public int ticket_id = -1;
-  private String user_id;
+  public String user_id;
   public String message;
 
   public SupportRequest(String id, String message) {

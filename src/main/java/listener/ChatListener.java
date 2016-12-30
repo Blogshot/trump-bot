@@ -326,12 +326,20 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             SupportRequest request =
                 Main.getInstance().supportRequests.getFromID(Integer.parseInt(ticket_id));
 
-            if (request != null) {
-              request.reply(reply, event.getClient(), false);
-            } else {
+            if (request == null) {
               Main.getInstance()
                   .writeMessage(event.getMessage().getChannel(), "Invalid ticket-id.");
+              return;
             }
+  
+            if (!request.user_id.equals(user.getID())) {
+              Main.getInstance()
+                  .writeMessage(event.getMessage().getChannel(), "You have no permission to reply to this ticket.");
+              return;
+            }
+            
+            request.reply(reply, event.getClient(), false);
+            
           } catch (Exception e) {
             Main.getInstance()
                 .writeMessage(
