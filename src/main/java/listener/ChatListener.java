@@ -32,7 +32,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           + "  --sounds    \tList all available sound files\n"
           + "  --stats     \tPrint a short summary of statistics\n"
           + "  --leave     \tForce-leave the current channel\n"
-          + "  -r <message>\tReport a bug, give feedback, etc.```";
+          + "  -r <message>\tReport a bug, give feedback, etc.\n\n" +
+          "Keeping the servers running costs money. Please consider donating. Visit 'trump.knotti.org' for more info.```";
   
   private final String helptext_admin =
       "Trump-Bot admin usage:\n```\n"
