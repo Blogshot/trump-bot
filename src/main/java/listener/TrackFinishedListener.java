@@ -9,6 +9,15 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
   @Override
   public void handle(TrackFinishEvent event) {
 
+    /*
+     Wait a few ms to fix 'java.net.SocketException: Socket is closed'.
+     (Audio-packet length is 20ms, use 21ms)
+      */
+    try {
+      Thread.sleep(21);
+    } catch (InterruptedException ignored) {
+    }
+  
     // Leave current channel after audio finished
     Main.getInstance().leaveVoiceChannel(event.getPlayer().getGuild());
 
