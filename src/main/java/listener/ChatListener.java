@@ -298,7 +298,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
                     privateChannel,
                     "You have successfully opened ticket #"
                         + request.ticket_id
-                        + ".\nYou can add comments to it by typing '!trump -ticket "
+                        + ".\nYou can add further comments by typing '!trump -t (--ticket) "
                         + request.ticket_id
                         + " <message>'");
           } catch (DiscordException | RateLimitException e) {
