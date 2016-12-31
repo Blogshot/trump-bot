@@ -142,7 +142,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     String message = event.getMessage().getContent().toLowerCase();
     IUser user = event.getMessage().getAuthor();
   
-    message = message.replace("!" + politician.name() + " ", "");
+    message = message.replace("!" + politician.name(), "").trim();
   
     boolean hasArguments = !message.equals("");
 
