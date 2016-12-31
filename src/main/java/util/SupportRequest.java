@@ -53,18 +53,18 @@ public class SupportRequest {
             this.message += "\n\n" + message;
 
             message +=
-                "\n\nYou can reply to this message by typing: `!trump -ticket:"
+                "\n\nYou can reply to this message by typing: `!trump -t (--ticket) "
                     + ticket_id
-                    + " <your text here>`";
+                    + " <message>`";
           } else {
             message = "User wrote: " + message;
 
             this.message += "\n\n" + message;
 
             message +=
-                "\n\nYou can reply to this message by typing: `!trump -admin --reply-ticket "
+                "\n\nYou can reply to this message by typing: `!trump-admin --reply-ticket "
                     + ticket_id
-                    + " <your text here>`";
+                    + " <message>`";
           }
 
           new MessageBuilder(client).withContent(message).withChannel(privateChannel).build();
