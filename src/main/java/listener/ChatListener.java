@@ -26,12 +26,12 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           + "!clinton\t[options]\n"
           + "!merkel \t[options]\n"
           + "\nOptions:\n\n"
-          + "  -help, -h   \tShow this message\n"
+          + "  -h, --help  \tShow this message\n"
           + "  -c <channel>\tSpecify voice channel to join\n"
           + "  -f <pattern>\tSpecify sound file to play. Wildcard: *\n"
-          + "  -sounds     \tList all available sound files\n"
-          + "  -stats      \tPrint a short summary of statistics\n"
-          + "  -leave      \tForce-leave the current channel\n"
+          + "  --sounds    \tList all available sound files\n"
+          + "  --stats     \tPrint a short summary of statistics\n"
+          + "  --leave     \tForce-leave the current channel\n"
           + "  -r <message>\tReport a bug, give feedback, etc.```";
   
   private final String helptext_admin =
@@ -278,7 +278,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           /*
            print stats to channel
           */
-        } else if (argument.equals("-stats") || argument.equals("-statistics")) {
+        } else if (argument.equals("--stats") || argument.equals("--statistics")) {
           printStats(textChannel);
           return;
         } else if (argument.startsWith("--report ") || argument.equals("-r ")) {
@@ -347,10 +347,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           request.reply(reply, event.getClient(), false);
           
           return;
-        } else if (argument.startsWith("-support")) {
-          new ErrorReporter(event.getClient())
-              .report(Main.getInstance().supportRequests.createReport());
-        } else if (argument.equals("-leave")) {
+        } else if (argument.equals("--leave")) {
           Main.getInstance().leaveVoiceChannel(event.getMessage().getGuild());
           return;
         } else {
