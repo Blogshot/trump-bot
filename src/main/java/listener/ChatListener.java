@@ -281,7 +281,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         } else if (argument.equals("--stats") || argument.equals("--statistics")) {
           printStats(textChannel);
           return;
-        } else if (argument.startsWith("--report ") || argument.equals("-r ")) {
+        } else if (argument.startsWith("--report ") || argument.startsWith("-r ")) {
           String value = argument.substring(argument.indexOf(" ") + 1);
           
           SupportRequest request = new SupportRequest(user.getID(), value);
