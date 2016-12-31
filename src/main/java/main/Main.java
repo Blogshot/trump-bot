@@ -32,15 +32,6 @@ import java.util.ArrayList;
 
 public class Main {
 
-  // todo
-  /*
-  
-  rework parameter-handling
-  
-  per-server-configuration (what options are needed?)
-  
-   */
-  
   private static final int[] milestones = {
     10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
   };
