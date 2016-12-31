@@ -26,13 +26,13 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           + "!clinton\t[options]\n"
           + "!merkel \t[options]\n"
           + "\nOptions:\n\n"
-          + "  -help, -h      \tShow this message\n"
-          + "  -c <channel>   \tSpecify voice channel to join\n"
-          + "  -f <pattern>   \tSpecify sound file to play. Wildcard: *\n"
-          + "  -sounds        \tList all available sound files\n"
-          + "  -stats         \tPrint a short summary of statistics\n"
-          + "  -leave         \tForce-leave the current channel\n"
-          + "  -contact <text>\tContact the creator (bugs, feedback, etc)```";
+          + "  -help, -h   \tShow this message\n"
+          + "  -c <channel>\tSpecify voice channel to join\n"
+          + "  -f <pattern>\tSpecify sound file to play. Wildcard: *\n"
+          + "  -sounds     \tList all available sound files\n"
+          + "  -stats      \tPrint a short summary of statistics\n"
+          + "  -leave      \tForce-leave the current channel\n"
+          + "  -r <message>\tReport a bug, give feedback, etc.```";
   
   private final String helptext_admin =
       "Trump-Bot admin usage:\n```\n"
