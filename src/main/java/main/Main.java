@@ -262,12 +262,11 @@ public class Main {
   }
 
   public void writeMessage(IChannel channel, String message) {
-
+    
     try {
       new MessageBuilder(client).withChannel(channel).withContent(message).build();
-    } catch (RateLimitException ignored) {
-
-    } catch (MissingPermissionsException | DiscordException e) {
+    } catch (MissingPermissionsException | RateLimitException ignored) {
+    } catch (DiscordException e) {
       new ErrorReporter(client).report(e);
     }
   }
