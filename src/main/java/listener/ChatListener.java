@@ -15,7 +15,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 public class ChatListener implements IListener<MessageReceivedEvent> {
@@ -141,7 +140,9 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     
     // get message content
     String message = event.getMessage().getContent().toLowerCase();
-    IUser user = event.getMessage().getAuthor();
+    IUser user = event.getAuthor();
+    IGuild guild = event.getGuild();
+    
   
     message = message.replace("!" + politician.name(), "").trim();
   
@@ -164,10 +165,12 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     
     // init voice channel with author's
     IVoiceChannel voiceChannel = null;
-    List<IVoiceChannel> voiceChannels = user.getConnectedVoiceChannels();
     
-    if (voiceChannels.size() > 0) {
-      voiceChannel = voiceChannels.get(0);
+    // search for channel in guild which contains the user
+    for (IVoiceChannel channel : user.getConnectedVoiceChannels()) {
+      if (channel.getGuild() == guild) {
+        voiceChannel = channel;
+      }
     }
 
     /*
@@ -195,8 +198,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           
           String value = argument.substring(argument.indexOf(" ") + 1);
           boolean found = false;
-          
-          IGuild guild = event.getMessage().getGuild();
           
           // iterate through available channels to find the specified channel
           for (IVoiceChannel candidate : guild.getVoiceChannels()) {
