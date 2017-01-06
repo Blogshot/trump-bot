@@ -6,5 +6,6 @@ support.json
 server-update
 
 # IDEA
-.idea
-!.idea/artifacts
+.idea/*
+!.idea
+!.idea/artifacts/
