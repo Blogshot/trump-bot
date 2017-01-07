@@ -17,9 +17,13 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
       Thread.sleep(21);
     } catch (InterruptedException ignored) {
     }
-  
+
     // Leave current channel after audio finished
     Main.getInstance().leaveVoiceChannel(event.getPlayer().getGuild());
+
+    // Clean memory to countermeasure memory leak
+    // https://github.com/austinv11/Discord4J/issues/191)
+    event.getPlayer().clean();
 
     System.out.println("Left voice channel.");
 
