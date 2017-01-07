@@ -1,5 +1,7 @@
 # Build
 build/
+gradle*
+.gradle
 trump.log
 stats.json
 support.json
