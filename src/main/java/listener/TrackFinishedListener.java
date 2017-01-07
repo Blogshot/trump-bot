@@ -25,7 +25,7 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
     // https://github.com/austinv11/Discord4J/issues/191)
     event.getPlayer().clean();
 
-    System.out.println("Left voice channel.");
+    System.out.println("Left voice channel and cleaned guild's player.");
 
     // Update stats
     Main.getInstance().played++;
