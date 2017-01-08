@@ -1,19 +1,16 @@
 package main;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.google.gson.*;
 import listener.ChatListener;
 import listener.TrackFinishedListener;
 import org.slf4j.LoggerFactory;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
 import util.ErrorReporter;
@@ -124,7 +121,7 @@ public class Main {
   private void start(String[] args) {
 
     boolean debug = false;
-    
+
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
@@ -141,14 +138,14 @@ public class Main {
 
     // disable warning for missing permissions on text-channels
     Discord4J.disableChannelWarnings();
-  
+
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     if (debug) {
       root.setLevel(Level.DEBUG);
     } else {
       root.setLevel(Level.INFO);
     }
-    
+
     played = getStatsAsJson().get("played").getAsLong();
     guilds = getStatsAsJson().get("guildCount").getAsLong();
 
@@ -171,6 +168,7 @@ public class Main {
       MessageList.setEfficiency(client, MessageList.EfficiencyLevel.HIGH);
 
       client.login();
+      client.changeStatus(Status.game("!trump --help"));
 
       EventDispatcher dispatcher =
           client.getDispatcher(); // Gets the EventDispatcher instance for this client instance
@@ -220,7 +218,7 @@ public class Main {
     // Join channel
     try {
       voiceChannel.join();
-      
+
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
 
       for (URL soundFile : soundFiles) {
@@ -253,7 +251,7 @@ public class Main {
   }
 
   public void writeMessage(IChannel channel, String message) {
-    
+
     try {
       new MessageBuilder(client).withChannel(channel).withContent(message).build();
     } catch (MissingPermissionsException | RateLimitException ignored) {
@@ -275,9 +273,10 @@ public class Main {
       // subtract some guilds to leave a buffer for a restart
       int shards = (int) ((guilds - 500) / 2500) + 1;
 
-      ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
-      clientBuilder.withToken(token); // Adds the login info to the builder
-      clientBuilder.withShards(shards);
+      ClientBuilder clientBuilder =
+          new ClientBuilder() // Creates the ClientBuilder instance
+              .withToken(token) // Adds the login info to the builder
+              .withShards(shards);
 
       return clientBuilder.build(); // Creates the client instance
 
