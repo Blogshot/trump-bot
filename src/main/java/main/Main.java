@@ -270,8 +270,8 @@ public class Main {
        5001-7500 guilds = 2 + 1
        ...
       */
-      // subtract some guilds to leave a buffer for a restart
-      int shards = (int) ((guilds - 500) / 2500) + 1;
+      // simulate some guilds to leave a buffer for a restart
+      int shards = (int) ((guilds + 500) / 2500) + 1;
 
       ClientBuilder clientBuilder =
           new ClientBuilder() // Creates the ClientBuilder instance
