@@ -25,7 +25,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Main {
 
@@ -50,6 +52,14 @@ public class Main {
     instance.start(args);
   }
 
+  public static void log(String message) {
+    Date date = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss.SSS");
+    String formattedDate = sdf.format(date);
+    
+    System.out.println(formattedDate + "   " + message);
+  }
+  
   public void saveSupportRequests() {
     try {
       FileWriter writer = new FileWriter("support.json");
@@ -132,13 +142,13 @@ public class Main {
       }
       if (arg.startsWith("--adminID=")) {
         adminID = arg.replace("--adminID=", "");
-        System.out.println("Admin-ID set to " + adminID);
+        Main.log("Admin-ID set to " + adminID);
       }
     }
 
     // disable warning for missing permissions on text-channels
     Discord4J.disableChannelWarnings();
-
+    
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     if (debug) {
       root.setLevel(Level.DEBUG);
@@ -223,7 +233,7 @@ public class Main {
 
       for (URL soundFile : soundFiles) {
         // feed the player with audio
-        System.out.println("Queuing " + soundFile);
+        Main.log("Queuing " + soundFile);
 
         player.queue(soundFile);
       }
@@ -233,7 +243,7 @@ public class Main {
         // if the sound is the x'th sound
         if (played == milestone - 1) {
 
-          System.out.println("Milestone reached!");
+          Main.log("Milestone reached!");
           writeMessage(
               textChannel,
               user.getName()

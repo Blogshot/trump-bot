@@ -24,13 +24,13 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
     // Clean memory to countermeasure memory leak
     // https://github.com/austinv11/Discord4J/issues/191)
     event.getPlayer().clean();
-
-    System.out.println("Left voice channel and cleaned guild's player.");
+  
+    Main.log("Left voice channel and cleaned guild's player.");
 
     // Update stats
     Main.getInstance().played++;
     Main.getInstance().saveStats();
-
-    System.out.println("Increased 'played' and saved stats.");
+  
+    Main.log("Increased 'played' and saved stats.");
   }
 }
