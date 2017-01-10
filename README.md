@@ -9,13 +9,14 @@ Write `!trump` (or any other command listed below) in any channel to trigger the
 |Command|Action|
 |:---|:---|
 |!trump, !clinton, !merkel|Invoke the bot with corresponding set of audio|
-|-help, -h|Show this message|
-|-c:\<channel>|Send the bot to a specified channel|
-|-f:\<pattern>|Specify sound file to use. Wildcard: *|
-|-sounds|List all available sound files|
-|-stats|Print a short summary of statistics|
-|-leave|Force-leave the current channel|
-|-contact:\<text\>|Contact the creator (bugs, feedback, etc)|
+|**Options**|**Action**
+|-h, --help|Show this message|
+|-c \<channel>|Send the bot to a specified channel|
+|-f \<pattern>|Specify sound file to use. Wildcard: *|
+|--sounds|List all available sound files|
+|--stats|Print a short summary of statistics|
+|--leave|Force-leave the current channel|
+|-r \<text\>|Contact the creator (bugs, feedback, etc)|
 
 #### Examples
 
