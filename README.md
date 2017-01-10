@@ -35,6 +35,9 @@ Get a copy of the bot:
 `git clone https://github.com/Blogshot/Trump-Bot.git`
 
 Then, just execute the .jar file in the bin/-directory with a token-parameter. The audio-folder must be in the working directory.
+
+Optional: Increase the heap size for java. If you're going to serve >500 servers, the bot is likely to get OutOfMemory-Exceptions otherwise.
+`export _JAVA_OPTIONS="-Xmx1g"`
 ```
 #!/bin/bash  
 
