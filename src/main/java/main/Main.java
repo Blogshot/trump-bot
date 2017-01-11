@@ -56,10 +56,10 @@ public class Main {
     Date date = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss.SSS");
     String formattedDate = sdf.format(date);
-    
+
     System.out.println(formattedDate + "   " + message);
   }
-  
+
   public void saveSupportRequests() {
     try {
       FileWriter writer = new FileWriter("support.json");
@@ -148,7 +148,7 @@ public class Main {
 
     // disable warning for missing permissions on text-channels
     Discord4J.disableChannelWarnings();
-    
+
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     if (debug) {
       root.setLevel(Level.DEBUG);
@@ -177,16 +177,26 @@ public class Main {
       // no caching of messages to reduce RAM-usage
       MessageList.setEfficiency(client, MessageList.EfficiencyLevel.HIGH);
 
+      // set status to booting
+      client.changePresence(true);
+      client.changeStatus(Status.game("Restarting, please stand by..."));
+
       client.login();
+
+      // wait for the bot to become available
+      do {
+        Thread.sleep(100);
+      } while (!client.isReady());
+
+      // set status to available
+      client.changePresence(false);
       client.changeStatus(Status.game("!trump --help"));
 
-      EventDispatcher dispatcher =
-          client.getDispatcher(); // Gets the EventDispatcher instance for this client instance
+      // finally, set listeners
+      EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher
 
-      // Register some listeners
-      dispatcher.registerListener(new ChatListener()); // Listener which reacts to commands
-      dispatcher.registerListener(
-          new TrackFinishedListener()); // Listener which reacts to finished audio
+      dispatcher.registerListener(new ChatListener());
+      dispatcher.registerListener(new TrackFinishedListener());
 
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
