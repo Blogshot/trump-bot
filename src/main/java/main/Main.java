@@ -10,6 +10,8 @@ import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.shard.LoginEvent;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
@@ -173,31 +175,32 @@ public class Main {
 
     try {
       client = getClient(token); // Gets the client object
-
+  
       // no caching of messages to reduce RAM-usage
       MessageList.setEfficiency(client, MessageList.EfficiencyLevel.HIGH);
-
+  
+      EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher
+      
+      client.login();
+  
+      // sleep until login
+      dispatcher.waitFor(LoginEvent.class);
+      
       // set status to booting
       client.changePresence(true);
-      client.changeStatus(Status.game("Restarting, please stand by..."));
-
-      client.login();
-
-      // wait for the bot to become available
-      do {
-        Thread.sleep(100);
-      } while (!client.isReady());
-
-      // set status to available
-      client.changePresence(false);
-      client.changeStatus(Status.game("!trump --help"));
-
-      // finally, set listeners
-      EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher
-
+      client.changeStatus(Status.game("Restarting..."));
+  
+      // sleep until ready
+      dispatcher.waitFor(ReadyEvent.class);
+      
+      // set listeners
       dispatcher.registerListener(new ChatListener());
       dispatcher.registerListener(new TrackFinishedListener());
-
+  
+      // finally, set status to available
+      client.changePresence(false);
+      client.changeStatus(Status.game("!trump --help"));
+      
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
     }
