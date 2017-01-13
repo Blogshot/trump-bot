@@ -251,7 +251,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         "Current stats:\n"
             + "```"
             + "Activated:                \t"
-            + readStat("played")
+            + Main.getInstance().readStat("played")
             + " times\n"
             + "Online since:             \t"
             + sdf.format(startDate)
@@ -260,15 +260,10 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
             + Main.getInstance().getUptime()
             + "\n"
             + "Currently active guilds:  \t"
-            + readStat("guildCount")
+            + Main.getInstance().client.getGuilds().size()
             + "```";
     
     Main.getInstance().writeMessage(textChannel, output);
-  }
-  
-  private String readStat(String stat) {
-    
-    return Main.getInstance().getStatsAsJson().get(stat).getAsString();
   }
   
   private String fileListToString(File[] files) {

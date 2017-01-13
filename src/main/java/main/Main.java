@@ -40,7 +40,7 @@ public class Main {
   public long played = 0;
   private long guilds = 0;
   private String token = "";
-  private IDiscordClient client;
+  public IDiscordClient client;
   public IChannel bugChannel;
   
   public static Main getInstance() {
@@ -64,10 +64,7 @@ public class Main {
     JsonObject obj = new JsonObject();
 
     obj.addProperty("played", played);
-
-    if (client != null) {
-      obj.addProperty("guildCount", client.getGuilds().size());
-    }
+    obj.addProperty("guildCount", client.getGuilds().size());
 
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String output = gson.toJson(obj);
@@ -155,22 +152,21 @@ public class Main {
       // sleep until login
       dispatcher.waitFor(LoginEvent.class);
       
-      played = getStatsAsJson().get("played").getAsLong();
-      guilds = getStatsAsJson().get("guildCount").getAsLong();
-      
       // set status to booting
       client.changePresence(true);
       client.changeStatus(Status.game("Restarting..."));
   
       // sleep until ready
       dispatcher.waitFor(ReadyEvent.class);
+  
+      played = Long.parseLong(Main.getInstance().readStat("played"));
+      guilds = client.getGuilds().size();
       
       // get support-guild
       List<IGuild> guilds = client.getGuilds();
-      for (int i = 0; i < guilds.size(); i++) {
-        IGuild guild = guilds.get(i);
+      for (IGuild guild : guilds) {
         if (guild.getID().equals("269206577418993664")) {
-  
+      
           // get bug-channel
           for (IChannel channel : guild.getChannels()) {
             if (channel.getID().equals("269364663349805057")) {
@@ -192,8 +188,12 @@ public class Main {
       new ErrorReporter(client).report(e);
     }
   }
+  
+  public String readStat(String stat) {
+    return Main.getInstance().getStatsAsJson().get(stat).getAsString();
+  }
 
-  public JsonObject getStatsAsJson() {
+  private JsonObject getStatsAsJson() {
     try {
       byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
       String json = new String(encoded, Charset.forName("UTF-8"));
