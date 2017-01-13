@@ -141,10 +141,7 @@ public class Main {
     } else {
       root.setLevel(Level.INFO);
     }
-
-    played = getStatsAsJson().get("played").getAsLong();
-    guilds = getStatsAsJson().get("guildCount").getAsLong();
-
+    
     try {
       client = getClient(token); // Gets the client object
   
@@ -157,6 +154,9 @@ public class Main {
   
       // sleep until login
       dispatcher.waitFor(LoginEvent.class);
+      
+      played = getStatsAsJson().get("played").getAsLong();
+      guilds = getStatsAsJson().get("guildCount").getAsLong();
       
       // set status to booting
       client.changePresence(true);
