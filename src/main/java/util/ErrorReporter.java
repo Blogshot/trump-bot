@@ -2,7 +2,6 @@ package util;
 
 import main.Main;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.io.PrintWriter;
@@ -17,22 +16,18 @@ public class ErrorReporter {
   }
 
   public void report(Exception e) {
-    send(exceptionToString(e));
+    report(exceptionToString(e));
   }
-
+  
   public void report(String message) {
-    send(message);
-  }
-
-  private void send(String message) {
 
     try {
-      IPrivateChannel privateChannel =
-          client.getOrCreatePMChannel(client.getUserByID(Main.getInstance().adminID));
-
-      new MessageBuilder(client).withChannel(privateChannel).withContent(message).build();
-
-    } catch (Exception ignored) {
+      new MessageBuilder(client)
+          .withChannel(Main.getInstance().bugChannel)
+          .withContent(message)
+          .build();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

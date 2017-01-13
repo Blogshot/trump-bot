@@ -2,7 +2,9 @@ package main;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import listener.ChatListener;
 import listener.TrackFinishedListener;
 import org.slf4j.LoggerFactory;
@@ -16,12 +18,8 @@ import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
 import util.ErrorReporter;
-import util.SupportList;
-import util.SupportRequest;
 
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -30,6 +28,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Main {
 
@@ -41,10 +40,9 @@ public class Main {
   public long played = 0;
   private long guilds = 0;
   private String token = "";
-  public String adminID = "";
   private IDiscordClient client;
-  public SupportList supportRequests = new SupportList();
-
+  public IChannel bugChannel;
+  
   public static Main getInstance() {
     return instance;
   }
@@ -60,16 +58,6 @@ public class Main {
     String formattedDate = sdf.format(date);
 
     System.out.println(formattedDate + "   " + message);
-  }
-
-  public void saveSupportRequests() {
-    try {
-      FileWriter writer = new FileWriter("support.json");
-      writer.write(supportRequests.serialize().toString());
-      writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   public void saveStats() {
@@ -142,10 +130,6 @@ public class Main {
       if (arg.equals("--debug")) {
         debug = true;
       }
-      if (arg.startsWith("--adminID=")) {
-        adminID = arg.replace("--adminID=", "");
-        Main.log("Admin-ID set to " + adminID);
-      }
     }
 
     // disable warning for missing permissions on text-channels
@@ -160,18 +144,6 @@ public class Main {
 
     played = getStatsAsJson().get("played").getAsLong();
     guilds = getStatsAsJson().get("guildCount").getAsLong();
-
-    for (JsonElement element : getSupportRequestsAsJson()) {
-      JsonObject obj = element.getAsJsonObject();
-
-      supportRequests.add(new SupportRequest(obj));
-    }
-
-    try {
-      supportRequests = new Gson().fromJson(getSupportRequestsAsJson(), supportRequests.getClass());
-    } catch (Exception ignored) {
-      supportRequests = new SupportList();
-    }
 
     try {
       client = getClient(token); // Gets the client object
@@ -192,6 +164,21 @@ public class Main {
   
       // sleep until ready
       dispatcher.waitFor(ReadyEvent.class);
+      
+      // get support-guild
+      List<IGuild> guilds = client.getGuilds();
+      for (int i = 0; i < guilds.size(); i++) {
+        IGuild guild = guilds.get(i);
+        if (guild.getID().equals("269206577418993664")) {
+  
+          // get bug-channel
+          for (IChannel channel : guild.getChannels()) {
+            if (channel.getID().equals("269364663349805057")) {
+              this.bugChannel = channel;
+            }
+          }
+        }
+      }
       
       // set listeners
       dispatcher.registerListener(new ChatListener());
@@ -221,20 +208,7 @@ public class Main {
       return getStatsAsJson();
     }
   }
-
-  private JsonArray getSupportRequestsAsJson() {
-    try {
-      byte[] encoded = Files.readAllBytes(Paths.get("support.json"));
-      String json = new String(encoded, Charset.forName("UTF-8"));
-
-      return new Gson().fromJson(json, JsonArray.class);
-
-    } catch (IOException e) {
-      new ErrorReporter(client).report(e);
-      return new JsonArray();
-    }
-  }
-
+  
   // Join channel and play specified audio
   public void playAudio(
       IVoiceChannel voiceChannel, IChannel textChannel, ArrayList<URL> soundFiles, IUser user) {

@@ -3,11 +3,10 @@ package listener;
 import main.Main;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.RateLimitException;
-import util.ErrorReporter;
-import util.SupportRequest;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -30,31 +29,16 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           + "  -f <pattern>\tSpecify sound file to play. Wildcard: *\n"
           + "  --sounds    \tList all available sound files\n"
           + "  --stats     \tPrint a short summary of statistics\n"
-          + "  --leave     \tForce-leave the current channel\n"
-          + "  -r <message>\tReport a bug, give feedback, etc.\n\n" +
-          "Keeping the servers running costs money. Please consider donating. Visit 'trump.knotti.org' for more info.```";
-  
-  private final String helptext_admin =
-      "Trump-Bot admin usage:\n```\n"
-          + "!trump-admin\t[options]\n"
-          + "\nOptions:\n\n"
-          + "  -h, --help                         \tShow this message\n"
-          + "  --list-tickets                     \tList open tickets\n"
-          + "  --close-ticket <ticketID>          \tClose ticket\n"
-          + "  --reply-ticket <ticketID> <message>\tReply to ticket```";
+          + "  --leave     \tForce-leave the current channel\n```\n"
+          + "Keeping the servers running costs money. Please consider donating. Visit https://trump.knotti.org for more info.\n\n"
+          + "If you need assistance or want to share feedback, contact Bloggi#7559 or join the support-discord: https://discord.gg/MzfyfTm"
+      ;
   
   @Override
   public void handle(MessageReceivedEvent event) {
     
     // get message content
     String message = event.getMessage().getContent().toLowerCase();
-    IUser user = event.getMessage().getAuthor();
-    
-    // support-console
-    if (message.startsWith("!trump-admin") && user.getID().equals(Main.getInstance().adminID)) {
-      handleAdmin(event);
-      return;
-    }
     
     Main.Politician politician = null;
     
@@ -67,68 +51,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     
     if (politician != null) {
       handleDefault(event, politician);
-    }
-  }
-  
-  private void handleAdmin(MessageReceivedEvent event) {
-    
-    // get message content
-    String message = event.getMessage().getContent().toLowerCase();
-    
-    message = message.replace("!trump-admin ", "");
-    
-    boolean hasArguments = !message.equals("");
-    
-    if (hasArguments) {
-      
-      for (String argument : getArguments(message)) {
-        
-        if (argument.equals("--list-tickets")) {
-          new ErrorReporter(event.getClient())
-              .report(Main.getInstance().supportRequests.createReport());
-          return;
-        } else if (argument.startsWith("--close-ticket ")) {
-          String value = argument.replace("--close-ticket ", "");
-          
-          String[] ticket_ids = value.split(" ");
-          
-          for (String ticket_id : ticket_ids) {
-            try {
-              int id = Integer.parseInt(ticket_id);
-              
-              Main.getInstance().supportRequests.removeID(id);
-            } catch (NumberFormatException e) {
-              new ErrorReporter(event.getClient()).report(e);
-              return;
-            }
-          }
-          Main.getInstance().saveSupportRequests();
-          
-        } else if (argument.startsWith("--reply-ticket ")) {
-          String value = argument.replace("--reply-ticket ", "");
-          
-          try {
-            String ticket_id = value.substring(0, value.indexOf(" "));
-            String reply = value.substring(value.indexOf(" ") + 1);
-            
-            SupportRequest request =
-                Main.getInstance().supportRequests.getFromID(Integer.parseInt(ticket_id));
-            
-            if (request != null) {
-              request.reply(reply, event.getClient(), true);
-            } else {
-              Main.getInstance()
-                  .writeMessage(
-                      event.getMessage().getChannel(), "No parameter for content detected.");
-            }
-          } catch (StringIndexOutOfBoundsException e) {
-            Main.getInstance().writeMessage(event.getMessage().getChannel(), "Invalid ticket-id.");
-          }
-          
-        } else {
-          printAdminHelp(event.getMessage().getChannel());
-        }
-      }
     }
   }
   
@@ -283,72 +205,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
         } else if (argument.equals("--stats") || argument.equals("--statistics")) {
           printStats(textChannel);
           return;
-        } else if (argument.startsWith("--report ") || argument.startsWith("-r ")) {
-          String value = argument.substring(argument.indexOf(" ") + 1);
-          
-          SupportRequest request = new SupportRequest(user.getID(), value);
-          
-          Main.getInstance().supportRequests.add(request);
-          
-          Main.getInstance().saveSupportRequests();
-          
-          try {
-            IPrivateChannel privateChannel = user.getOrCreatePMChannel();
-            
-            Main.getInstance()
-                .writeMessage(
-                    privateChannel,
-                    "You have successfully opened ticket #"
-                        + request.ticket_id
-                        + ".\nYou can add further comments by typing '!trump -t (--ticket) "
-                        + request.ticket_id
-                        + " <message>'");
-          } catch (DiscordException | RateLimitException e) {
-            e.printStackTrace();
-          }
-          
-          new ErrorReporter(event.getClient())
-              .report(
-                  "A new support-request was added:\n"
-                      + "```\n"
-                      + request.ticket_id
-                      + ":\n"
-                      + request.message
-                      + "\n```");
-          
-          return;
-        } else if (argument.startsWith("--ticket ") || argument.startsWith("-t ")) {
-          
-          String value = argument.substring(argument.indexOf(" ") + 1);
-          
-          // two arguments given (ID and MESSAGE)
-          if (!value.contains(" ")) {
-            Main.getInstance()
-                .writeMessage(event.getMessage().getChannel(), "You must specify <ticket-id> and <message>, in that order.");
-            return;
-          }
-          
-          String ticket_id = value.substring(0, value.indexOf(" "));
-          String reply = value.substring(value.indexOf(" ") + 1);
-          
-          SupportRequest request =
-              Main.getInstance().supportRequests.getFromID(Integer.parseInt(ticket_id));
-          
-          if (request == null) {
-            Main.getInstance()
-                .writeMessage(event.getMessage().getChannel(), "Invalid ticket-id.");
-            return;
-          }
-          
-          if (!request.user_id.equals(user.getID())) {
-            Main.getInstance()
-                .writeMessage(event.getMessage().getChannel(), "You have no permission to reply to this ticket.");
-            return;
-          }
-          
-          request.reply(reply, event.getClient(), false);
-          
-          return;
         } else if (argument.equals("--leave")) {
           Main.getInstance().leaveVoiceChannel(event.getMessage().getGuild());
           return;
@@ -433,10 +289,6 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     }
     
     return matches.trim();
-  }
-  
-  private void printAdminHelp(IChannel textChannel) {
-    Main.getInstance().writeMessage(textChannel, helptext_admin);
   }
   
   private void printHelp(String intro, IChannel textChannel) {
