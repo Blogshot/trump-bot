@@ -19,7 +19,14 @@ public class ErrorReporter {
   
     // get bug-channel
     IGuild guild = client.getGuildByID("269206577418993664");
-    this.bugChannel = guild.getChannelByID("269364663349805057");
+    
+    // TODO remove this after https://github.com/austinv11/Discord4J/issues/195 is fixed
+    /*
+    if bot isn't ready yet, set bugChannel to null. Temporary workaround.
+    */
+    if (guild != null) {
+      this.bugChannel = guild.getChannelByID("269364663349805057");
+    }
   }
 
   public void report(Exception e) {
@@ -27,7 +34,15 @@ public class ErrorReporter {
   }
   
   public void report(String message) {
-
+  
+    // TODO remove this after https://github.com/austinv11/Discord4J/issues/195 is fixed
+    /*
+      ignore if bugChannel == null
+       */
+    if (bugChannel == null) {
+      return;
+    }
+  
     try {
       new MessageBuilder(client)
           .withChannel(bugChannel)
