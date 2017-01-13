@@ -28,97 +28,96 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
-
-  private static final int[] milestones = {
-    10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
+  
+  private final int[] milestones = {
+      10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
   };
   private static Main instance;
   public final long startedInMillis = System.currentTimeMillis();
-  public long played = 0;
+  public AtomicLong played = new AtomicLong(0);
   private long guilds = 0;
   private String token = "";
   public IDiscordClient client;
-  public IChannel bugChannel;
   
   public static Main getInstance() {
     return instance;
   }
-
+  
   public static void main(String[] args) throws FileNotFoundException {
     instance = new Main();
     instance.start(args);
   }
-
+  
   public static void log(String message) {
     Date date = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss.SSS");
     String formattedDate = sdf.format(date);
-
+    
     System.out.println(formattedDate + "   " + message);
   }
-
+  
   public void saveStats() {
     JsonObject obj = new JsonObject();
-
+    
     obj.addProperty("played", played);
     obj.addProperty("guildCount", client.getGuilds().size());
-
+    
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String output = gson.toJson(obj);
-
+    
     PrintWriter out;
     try {
       out = new PrintWriter("stats.json");
       out.print(output);
       out.close();
-
+      
     } catch (FileNotFoundException e) {
       new ErrorReporter(client).report(e);
     }
   }
-
+  
   public String getUptime() {
-
+    
     long milliseconds = System.currentTimeMillis() - startedInMillis;
-
+    
     int seconds = (int) (milliseconds / 1000) % 60;
     int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
     int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
     int days = (int) ((milliseconds / (1000 * 60 * 60 * 24)) % 30);
-
+    
     return days + "." + hours + ":" + minutes + ":" + seconds;
   }
-
+  
   public IVoiceChannel isBusyInGuild(IGuild guild) {
-
+    
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
-
+      
       if (voiceChannel.getGuild().getID().equals(guild.getID())) {
         return voiceChannel;
       }
     }
     return null;
   }
-
+  
   public void leaveVoiceChannel(IGuild guild) {
-
+    
     for (IVoiceChannel voiceChannel : client.getConnectedVoiceChannels()) {
-
+      
       if (voiceChannel.getGuild().getID().equals(guild.getID())) {
-
+        
         voiceChannel.leave();
         break;
       }
     }
   }
-
+  
   private void start(String[] args) {
-
+    
     boolean debug = false;
-
+    
     for (String arg : args) {
       if (arg.startsWith("--token=")) {
         token = arg.replace("--token=", "");
@@ -128,10 +127,10 @@ public class Main {
         debug = true;
       }
     }
-
+    
     // disable warning for missing permissions on text-channels
     Discord4J.disableChannelWarnings();
-
+    
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     if (debug) {
       root.setLevel(Level.DEBUG);
@@ -141,45 +140,31 @@ public class Main {
     
     try {
       client = getClient(token); // Gets the client object
-  
+      
       // no caching of messages to reduce RAM-usage
       MessageList.setEfficiency(client, MessageList.EfficiencyLevel.HIGH);
-  
+      
       EventDispatcher dispatcher = client.getDispatcher(); // Gets the EventDispatcher
       
       client.login();
-  
+      
       // sleep until login
       dispatcher.waitFor(LoginEvent.class);
       
       // set status to booting
       client.changePresence(true);
       client.changeStatus(Status.game("Restarting..."));
-  
+      
       // sleep until ready
       dispatcher.waitFor(ReadyEvent.class);
-  
-      played = Long.parseLong(Main.getInstance().readStat("played"));
+      
+      played = new AtomicLong(Long.parseLong(Main.getInstance().readStat("played")));
       guilds = client.getGuilds().size();
-      
-      // get support-guild
-      List<IGuild> guilds = client.getGuilds();
-      for (IGuild guild : guilds) {
-        if (guild.getID().equals("269206577418993664")) {
-      
-          // get bug-channel
-          for (IChannel channel : guild.getChannels()) {
-            if (channel.getID().equals("269364663349805057")) {
-              this.bugChannel = channel;
-            }
-          }
-        }
-      }
       
       // set listeners
       dispatcher.registerListener(new ChatListener());
       dispatcher.registerListener(new TrackFinishedListener());
-  
+      
       // finally, set status to available
       client.changePresence(false);
       client.changeStatus(Status.game("!trump --help"));
@@ -192,19 +177,19 @@ public class Main {
   public String readStat(String stat) {
     return Main.getInstance().getStatsAsJson().get(stat).getAsString();
   }
-
+  
   private JsonObject getStatsAsJson() {
     try {
       byte[] encoded = Files.readAllBytes(Paths.get("stats.json"));
       String json = new String(encoded, Charset.forName("UTF-8"));
-
+      
       return new Gson().fromJson(json, JsonObject.class);
-
+      
     } catch (Exception e) {
-
+      
       // create new Stats-File
       saveStats();
-
+      
       return getStatsAsJson();
     }
   }
@@ -215,21 +200,21 @@ public class Main {
     // Join channel
     try {
       voiceChannel.join();
-
+      
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
-
+      
       for (URL soundFile : soundFiles) {
         // feed the player with audio
         Main.log("Queuing " + soundFile);
-
+        
         player.queue(soundFile);
       }
-
+      
       for (int milestone : milestones) {
-
+        
         // if the sound is the x'th sound
-        if (played == milestone - 1) {
-
+        if (played.get() == milestone - 1) {
+          
           Main.log("Milestone reached!");
           writeMessage(
               textChannel,
@@ -239,16 +224,16 @@ public class Main {
                   + "-milestone! Congratulations, have a friendly handshake! :handshake:");
         }
       }
-
+      
     } catch (MissingPermissionsException e) {
       writeMessage(textChannel, "I have no permission to join this channel.");
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
     }
   }
-
+  
   public void writeMessage(IChannel channel, String message) {
-
+    
     try {
       new MessageBuilder(client).withChannel(channel).withContent(message).build();
     } catch (MissingPermissionsException | RateLimitException ignored) {
@@ -256,10 +241,10 @@ public class Main {
       new ErrorReporter(client).report(e);
     }
   }
-
+  
   private IDiscordClient getClient(String token)
       throws Exception { // Returns an instance of the Discord client
-
+    
     if (client == null) {
       /*
        0-2500 guilds = 0 + 1
@@ -269,17 +254,17 @@ public class Main {
       */
       // simulate some guilds to leave a buffer for a restart
       int shards = (int) ((guilds + 500) / 2500) + 1;
-
+      
       ClientBuilder clientBuilder =
           new ClientBuilder() // Creates the ClientBuilder instance
               .withToken(token) // Adds the login info to the builder
               .withShards(shards);
-
+      
       return clientBuilder.build(); // Creates the client instance
-
+      
     } else return client;
   }
-
+  
   public enum Politician {
     trump,
     clinton,

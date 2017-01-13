@@ -28,7 +28,7 @@ public class TrackFinishedListener implements IListener<TrackFinishEvent> {
     Main.log("Left voice channel and cleaned guild's player.");
 
     // Update stats
-    Main.getInstance().played++;
+    Main.getInstance().played.incrementAndGet();
     Main.getInstance().saveStats();
   
     Main.log("Increased 'played' and saved stats.");
