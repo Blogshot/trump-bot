@@ -237,13 +237,7 @@ public class Main {
   }
   
   public void writeMessage(IChannel channel, String message) {
-    
-    try {
-      new MessageBuilder(client).withChannel(channel).withContent(message).build();
-    } catch (MissingPermissionsException | RateLimitException ignored) {
-    } catch (DiscordException e) {
-      new ErrorReporter(client).report(e);
-    }
+    channel.sendMessage(message);
   }
   
   private IDiscordClient getClient(String token)
