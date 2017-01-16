@@ -32,9 +32,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
   
-  private final int[] milestones = {
-      10000, 15000, 20000, 25000, 30000, 40000, 50000, 50000, 75000, 100000
-  };
   private static Main instance;
   public final long startedInMillis = System.currentTimeMillis();
   private AtomicLong played = new AtomicLong(0);
@@ -128,7 +125,7 @@ public class Main {
       if (arg.equals("--debug")) {
         debug = true;
       }
-  
+      
       if (arg.equals("--lavaplayer")) {
         this.useLavaPlayer = true;
       }
@@ -224,20 +221,17 @@ public class Main {
   }
   
   public void checkMilestones(IChannel textChannel, IUser user) {
-  
-    for (int milestone : milestones) {
     
-      // if the sound is the x'th sound
-      if (played.get() == milestone - 1) {
+    // if the sound is a multiple of 10000
+    if (played.get() + 1 % 10000 == 0) {
       
-        Main.log("Milestone reached!");
-        writeMessage(
-            textChannel,
-            user.getName()
-                + " just broke the "
-                + milestone
-                + "-milestone! Congratulations, have a friendly handshake! :handshake:");
-      }
+      Main.log("Milestone reached!");
+      writeMessage(
+          textChannel,
+          user.getName()
+              + " just broke the "
+              + played.get() + 1
+              + "-milestone! Congratulations, have a friendly handshake! :handshake:");
     }
     
   }
@@ -278,31 +272,31 @@ public class Main {
   public void handleTrackFinished(AudioPlayer player) {
     // Leave current channel after audio finished
     Main.getInstance().leaveVoiceChannel(player.getGuild());
-  
+    
     // Clean memory to countermeasure memory leak
     // https://github.com/austinv11/Discord4J/issues/191)
     player.clean();
-  
+    
     Main.log("Left voice channel and cleaned guild's player.");
-  
+    
     // Update stats
     Main.getInstance().played.incrementAndGet();
     Main.getInstance().saveStats();
-  
+    
     Main.log("Increased 'played' and saved stats.");
   }
   
   public void handleTrackFinished(IGuild guild) {
-  
+    
     // Leave current channel after audio finished
     Main.getInstance().leaveVoiceChannel(guild);
     
     Main.log("Left voice channel and cleaned guild's player.");
-  
+    
     // Update stats
     Main.getInstance().played.incrementAndGet();
     Main.getInstance().saveStats();
-  
+    
     Main.log("Increased 'played' and saved stats.");
     
   }
