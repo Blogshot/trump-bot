@@ -17,4 +17,5 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.1.7"
 
     compile 'com.google.code.gson:gson:2.8'
+    compile 'com.sedmelluq:lavaplayer:1.1.41'
 }

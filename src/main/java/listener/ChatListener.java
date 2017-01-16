@@ -68,8 +68,10 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     String message = event.getMessage().getContent().toLowerCase();
     IUser user = event.getAuthor();
     IGuild guild = event.getGuild();
-    
   
+    // by default, disable lavaPlayer
+    boolean useLavaPlayerTemporary = false;
+    
     message = message.replace("!" + politician.name(), "").trim();
   
     boolean hasArguments = !message.equals("");
@@ -87,7 +89,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     IChannel textChannel = event.getMessage().getChannel();
     
     // init sound with random
-    ArrayList<URL> soundFiles = new ArrayList<>();
+    URL soundFile = getRandomAudio(politician);
     
     // init voice channel with author's
     IVoiceChannel voiceChannel = null;
@@ -107,6 +109,8 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
     if (hasArguments) {
       
       for (String argument : getArguments(message)) {
+  
+        argument = argument.toLowerCase().trim();
         
         // help-message
         if (argument.equals("--help") || argument.equals("-h")) {
@@ -116,6 +120,15 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
            */
           printHelp(textChannel);
           return;
+
+          /*
+          custom channel
+           */
+        }
+        // help-message
+        if (argument.equals("--lavaplayer") || argument.equals("-lp")) {
+
+          useLavaPlayerTemporary = true;
 
           /*
           custom channel
@@ -185,7 +198,7 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
           } else {
             
             // set the only match as desired audio
-            soundFiles.add(candidates.get(0));
+            soundFile = candidates.get(0);
           }
 
           /*
@@ -239,11 +252,11 @@ public class ChatListener implements IListener<MessageReceivedEvent> {
       return;
     }
     
-    if (soundFiles.isEmpty()) {
-      soundFiles.add(getRandomAudio(politician));
+    if (Main.getInstance().useLavaPlayer || useLavaPlayerTemporary) {
+      Main.getInstance().lavaPlayer.playAudio(voiceChannel, textChannel, soundFile, user);
+    } else {
+      Main.getInstance().playAudio(voiceChannel, textChannel, soundFile, user);
     }
-    
-    Main.getInstance().playAudio(voiceChannel, textChannel, soundFiles, user);
   }
   
   private void printStats(IChannel textChannel) {

@@ -18,6 +18,7 @@ import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 import sx.blah.discord.util.audio.AudioPlayer;
 import util.ErrorReporter;
+import util.LavaPlayer;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -26,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,10 +37,12 @@ public class Main {
   };
   private static Main instance;
   public final long startedInMillis = System.currentTimeMillis();
-  public AtomicLong played = new AtomicLong(0);
+  private AtomicLong played = new AtomicLong(0);
   private long guilds = 0;
   private String token = "";
   public IDiscordClient client;
+  public LavaPlayer lavaPlayer = new LavaPlayer();
+  public boolean useLavaPlayer;
   
   public static Main getInstance() {
     return instance;
@@ -126,6 +128,10 @@ public class Main {
       if (arg.equals("--debug")) {
         debug = true;
       }
+  
+      if (arg.equals("--lavaplayer")) {
+        this.useLavaPlayer = true;
+      }
     }
     
     // disable warning for missing permissions on text-channels
@@ -196,34 +202,19 @@ public class Main {
   
   // Join channel and play specified audio
   public void playAudio(
-      IVoiceChannel voiceChannel, IChannel textChannel, ArrayList<URL> soundFiles, IUser user) {
+      IVoiceChannel voiceChannel, IChannel textChannel, URL soundFile, IUser user) {
     // Join channel
     try {
       voiceChannel.join();
       
       AudioPlayer player = AudioPlayer.getAudioPlayerForGuild(voiceChannel.getGuild());
       
-      for (URL soundFile : soundFiles) {
-        // feed the player with audio
-        Main.log("Queuing " + soundFile);
-        
-        player.queue(soundFile);
-      }
+      // feed the player with audio
+      Main.log("Queuing " + soundFile);
       
-      for (int milestone : milestones) {
-        
-        // if the sound is the x'th sound
-        if (played.get() == milestone - 1) {
-          
-          Main.log("Milestone reached!");
-          writeMessage(
-              textChannel,
-              user.getName()
-                  + " just broke the "
-                  + milestone
-                  + "-milestone! Congratulations, have a friendly handshake! :handshake:");
-        }
-      }
+      player.queue(soundFile);
+      
+      checkMilestones(textChannel, user);
       
     } catch (MissingPermissionsException e) {
       writeMessage(textChannel, "I have no permission to join this channel.");
@@ -231,6 +222,26 @@ public class Main {
       new ErrorReporter(client).report(e);
     }
   }
+  
+  public void checkMilestones(IChannel textChannel, IUser user) {
+  
+    for (int milestone : milestones) {
+    
+      // if the sound is the x'th sound
+      if (played.get() == milestone - 1) {
+      
+        Main.log("Milestone reached!");
+        writeMessage(
+            textChannel,
+            user.getName()
+                + " just broke the "
+                + milestone
+                + "-milestone! Congratulations, have a friendly handshake! :handshake:");
+      }
+    }
+    
+  }
+  
   
   public void writeMessage(IChannel channel, String message) {
     
@@ -263,6 +274,38 @@ public class Main {
       return clientBuilder.build(); // Creates the client instance
       
     } else return client;
+  }
+  
+  public void handleTrackFinished(AudioPlayer player) {
+    // Leave current channel after audio finished
+    Main.getInstance().leaveVoiceChannel(player.getGuild());
+  
+    // Clean memory to countermeasure memory leak
+    // https://github.com/austinv11/Discord4J/issues/191)
+    player.clean();
+  
+    Main.log("Left voice channel and cleaned guild's player.");
+  
+    // Update stats
+    Main.getInstance().played.incrementAndGet();
+    Main.getInstance().saveStats();
+  
+    Main.log("Increased 'played' and saved stats.");
+  }
+  
+  public void handleTrackFinished(IGuild guild) {
+  
+    // Leave current channel after audio finished
+    Main.getInstance().leaveVoiceChannel(guild);
+    
+    Main.log("Left voice channel and cleaned guild's player.");
+  
+    // Update stats
+    Main.getInstance().played.incrementAndGet();
+    Main.getInstance().saveStats();
+  
+    Main.log("Increased 'played' and saved stats.");
+    
   }
   
   public enum Politician {
