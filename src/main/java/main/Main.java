@@ -53,7 +53,7 @@ public class Main {
     instance.start(args);
   }
   
-  public static void log(String message) {
+  private static void log(String message) {
     Date date = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss.SSS");
     String formattedDate = sdf.format(date);
@@ -61,7 +61,7 @@ public class Main {
     System.out.println(formattedDate + "   " + message);
   }
   
-  public void saveStats() {
+  private void saveStats() {
     JsonObject obj = new JsonObject();
     
     obj.addProperty("played", played);
@@ -241,7 +241,6 @@ public class Main {
     }
     
   }
-  
   
   public void writeMessage(IChannel channel, String message) {
     
