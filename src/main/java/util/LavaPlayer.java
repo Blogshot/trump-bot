@@ -58,13 +58,11 @@ public class LavaPlayer {
     
     GuildMusicManager musicManager = getGuildAudioPlayer(textChannel.getGuild());
     
-    playerManager.loadItemOrdered(musicManager, soundFile.getPath(), new AudioLoadResultHandler() {
+    playerManager.loadItem(soundFile.getPath(), new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
         voiceChannel.join();
-        
         musicManager.scheduler.queue(track);
-        
         Main.getInstance().checkMilestones(textChannel, user);
       }
       
@@ -76,19 +74,11 @@ public class LavaPlayer {
       
       @Override
       public void loadFailed(FriendlyException exception) {
-        sendMessageToChannel(textChannel, "Could not play: " + exception.getMessage());
+        Main.getInstance().writeMessage(textChannel, "Could not play: " + exception.getMessage());
       }
     });
   }
   
-  
-  private void sendMessageToChannel(IChannel channel, String message) {
-    try {
-      channel.sendMessage(message);
-    } catch (Exception e) {
-      log.warn("Failed to send message {} to {}", message, channel.getName(), e);
-    }
-  }
 }
 
 
@@ -146,6 +136,7 @@ class GuildMusicManager {
   
   /**
    * Creates a player and a track scheduler.
+   *
    * @param manager Audio player manager to use for creating the player.
    */
   public GuildMusicManager(AudioPlayerManager manager, IGuild guild) {
