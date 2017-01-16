@@ -169,9 +169,21 @@ public class Main {
       dispatcher.registerListener(new TrackFinishedListener());
       
       // finally, set status to available
-      client.changePresence(false);
-      client.changeStatus(Status.game("!trump --help"));
-      
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          // wait for 3 minutes
+          // workaround for API-bug
+          try {
+            Thread.sleep(180000);
+  
+            client.changePresence(false);
+            client.changeStatus(Status.game("!trump --help"));
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      });
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
     }
