@@ -183,7 +183,7 @@ public class Main {
             e.printStackTrace();
           }
         }
-      });
+      }).start();
     } catch (Exception e) {
       new ErrorReporter(client).report(e);
     }
