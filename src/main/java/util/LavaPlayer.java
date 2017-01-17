@@ -23,8 +23,6 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class LavaPlayer {
   private static final Logger log = LoggerFactory.getLogger(Main.class);
@@ -62,7 +60,7 @@ public class LavaPlayer {
       @Override
       public void trackLoaded(AudioTrack track) {
         voiceChannel.join();
-        musicManager.scheduler.queue(track);
+        musicManager.player.playTrack(track);
         Main.getInstance().checkMilestones(textChannel, user);
       }
       
@@ -78,93 +76,33 @@ public class LavaPlayer {
       }
     });
   }
-  
 }
 
 
-/**
- * This class schedules tracks for the audio player. It contains the queue of tracks.
- */
-class TrackScheduler extends AudioEventAdapter {
-  private final AudioPlayer player;
-  private final BlockingQueue<AudioTrack> queue;
-  private final IGuild guild;
-  
-  /**
-   * @param player The audio player this scheduler uses
-   */
-  public TrackScheduler(AudioPlayer player, IGuild guild) {
-    this.player = player;
-    this.queue = new LinkedBlockingQueue<>();
-    this.guild = guild;
-  }
-  
-  /**
-   * Add the next track to queue or play right away if nothing is in the queue.
-   *
-   * @param track The track to play or add to queue.
-   */
-  public void queue(AudioTrack track) {
-    // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
-    // something is playing, it returns false and does nothing. In that case the player was already playing so this
-    // track goes to the queue instead.
-    if (!player.startTrack(track, true)) {
-      queue.offer(track);
-    }
-  }
-  
-  @Override
-  public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-    if (endReason == AudioTrackEndReason.FINISHED) {
-      Main.getInstance().handleTrackFinished(guild);
-    }
-  }
-}
-
-/**
- * Holder for both the player and a track scheduler for one guild.
- */
 class GuildMusicManager {
-  /**
-   * Audio player for the guild.
-   */
-  private final AudioPlayer player;
-  /**
-   * Track scheduler for the player.
-   */
-  public final TrackScheduler scheduler;
+  public final AudioPlayer player;
   
-  /**
-   * Creates a player and a track scheduler.
-   *
-   * @param manager Audio player manager to use for creating the player.
-   */
   public GuildMusicManager(AudioPlayerManager manager, IGuild guild) {
     player = manager.createPlayer();
-    scheduler = new TrackScheduler(player, guild);
-    player.addListener(scheduler);
+
+    player.addListener(new AudioEventAdapter() {
+      @Override
+      public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        Main.getInstance().handleTrackFinished(guild);
+      }
+    });
+    
   }
   
-  /**
-   * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
-   */
   public AudioProvider getAudioProvider() {
     return new AudioProvider(player);
   }
 }
 
-/**
- * This is a wrapper around AudioPlayer which makes it behave as an IAudioProvider for D4J. As D4J calls canProvide
- * before every call to provide(), we pull the frame in canProvide() and use the frame we already pulled in
- * provide().
- */
 class AudioProvider implements IAudioProvider {
   private final AudioPlayer audioPlayer;
   private AudioFrame lastFrame;
   
-  /**
-   * @param audioPlayer Audio player to wrap.
-   */
   public AudioProvider(AudioPlayer audioPlayer) {
     this.audioPlayer = audioPlayer;
   }
