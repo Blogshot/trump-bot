@@ -1,0 +1,15 @@
+#!/bin/bash
+cd /root/discord-bots/Trump-Bot;
+
+data=$(cat stats.json | jq -r '.guildCount');
+
+data="{\"server_count\":"$data"}";
+
+echo $data;
+
+curl \
+  -X POST \
+  -H "Authorization: <token>" \
+  -H "Content-Type: application/json" \
+  -d $data \
+  https://bots.discord.pw/api/bots/247869756609265664/stats;
