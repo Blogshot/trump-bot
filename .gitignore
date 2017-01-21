@@ -5,7 +5,6 @@ gradle*
 trump.log
 stats.json
 support.json
-server-update
 
 # IDEA
 .idea/*
