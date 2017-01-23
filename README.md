@@ -6,7 +6,7 @@ https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&p
 ### Create a file named `stats.json` to store statistics:
 ```
 {
-  "played": o,
+  "played": 0,
   "guildCount": 0
 }
 ```
