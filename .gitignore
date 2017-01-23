@@ -1,12 +1,5 @@
 # Build
-build/
-gradle*
-.gradle
 trump.log
 stats.json
-support.json
-
-# IDEA
-.idea/*
-!.idea
-!.idea/artifacts/
+config.json
+package.json
