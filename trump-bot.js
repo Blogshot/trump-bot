@@ -148,12 +148,6 @@ function playAudio(voiceChannel, file, politician, textChannel) {
             }
 
             writeStats();
-        }).catch(error => {
-            console.log(error);
-            connection.disconnect();
-            voiceChannel.leave();
-            feedback.writeMessage(client, textChannel, error.toString());
-
         });
 
     }).catch(error => {
