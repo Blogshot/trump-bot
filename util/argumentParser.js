@@ -19,7 +19,7 @@ module.exports = {
                 /*
                 print help and exit
                  */
-                options.message += feedback.helpText;
+                options.message = feedback.helpText;
                 options.play = false;
 
                 /*
@@ -52,7 +52,7 @@ module.exports = {
                 if (!found) {
 
                     // invalid channel, report and exit
-                    options.message += "I could not find the voice-channel you specified. Select one of the following:\n"
+                    options.message = "I could not find the voice-channel you specified. Select one of the following:\n"
                         + getVoiceChannelList(channels);
                     options.play = false;
                 }
@@ -70,12 +70,12 @@ module.exports = {
                 if (candidates.length == 0) {
 
                     // no match found, cant continue. report and exit
-                    options.message += "I could not find a filename matching the pattern you specified.";
+                    options.message = "I could not find a filename matching the pattern you specified.";
                     options.play = false;
                 } else if (candidates.length > 1) {
 
                     // multiple matches
-                    options.message += "I found multiple audios matching your pattern. Please select one of the following:\n\n"
+                    options.message = "I found multiple audios matching your pattern. Please select one of the following:\n\n"
                         + candidates.join("\n");
                     options.play = false;
 
@@ -92,7 +92,7 @@ module.exports = {
             } else if (argument == "--sounds") {
 
                 //feedback.printSounds(client, textChannel);
-                options.message += getSounds(politician);
+                options.message = getSounds(politician);
                 options.play = false;
 
                 /*
@@ -100,14 +100,14 @@ module.exports = {
                 */
             } else if (argument == "--stats" || argument == "--statistics") {
                 //feedback.printStats(client, textChannel);
-                options.message += getStats(client);
+                options.message = getStats(client);
                 options.play = false;
             } else if (argument == "--leave") {
                 options.leave = true;
                 options.play = false;
             } else {
                 // unknown argument, print help and exit
-                options.message += "You entered an unknown argument.";
+                options.message = "You entered an unknown argument.";
                 options.play = false;
             }
         }
