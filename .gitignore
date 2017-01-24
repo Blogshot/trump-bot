@@ -1,5 +1,6 @@
-# Build
 trump.log
 stats.json
-config.json
+config.js
 package.json
+server-update
+node_modules
