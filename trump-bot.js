@@ -19,7 +19,7 @@ client.login(token);
 function setListeners(client) {
 
     process.on('uncaughtException', function (exception) {
-        console.log(exception);
+        console.log("Global error: " + exception);
     });
 
     process.on("unhandledRejection", err => {
@@ -148,6 +148,12 @@ function playAudio(voiceChannel, file, politician, textChannel) {
             }
 
             writeStats();
+        }).catch(error => {
+            console.log(error);
+            connection.disconnect();
+            voiceChannel.leave();
+            feedback.writeMessage(client, textChannel, error.toString());
+
         });
 
     }).catch(error => {
