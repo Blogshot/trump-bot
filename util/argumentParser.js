@@ -37,11 +37,7 @@ module.exports = {
 
                     var channel = channels[i];
 
-                    console.log(channel.name);
-
                     if (channel.type == "voice" && channel.name.toLowerCase() == value) {
-                        console.log(channel.name);
-
                         options.voiceChannel = channel;
                         options.play = true;
                         found = true;
