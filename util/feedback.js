@@ -1,6 +1,6 @@
 module.exports = {
 
-  writeMessage: function (client, channel, text) {
+  writeMessage: function (channel, text) {
     channel.sendMessage(text).catch(error => {
       // split logging to get whole response. error.toString just gets the message
       console.log("Error sending message:\n");

@@ -108,7 +108,7 @@ function handleMessage(message) {
     }
 
     if (options.message) {
-        feedback.writeMessage(client, textChannel, options.message);
+        feedback.writeMessage(textChannel, options.message);
     }
 
 }
@@ -151,7 +151,7 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         });
 
     }).catch(error => {
-        feedback.writeMessage(client, textChannel, error.toString());
+        feedback.writeMessage(textChannel, error.toString());
     });
 }
 
