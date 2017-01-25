@@ -128,6 +128,17 @@ function isBusyInGuild(guild) {
 }
 
 function playAudio(voiceChannel, file, politician, textChannel) {
+
+    // check for permissions first
+    if (!voiceChannel.permissionsFor(client.user.id).hasPermission("CONNECT")) {
+        feedback.writeMessage(textChannel, "No permission to join this channel.")
+        return;
+    };
+    if (!voiceChannel.permissionsFor(client.user.id).hasPermission("SPEAK")) {
+        feedback.writeMessage(textChannel, "No permission to speak in this channel.")
+        return;
+    };
+
     voiceChannel.join().then(connection => {
         console.log("Joined channel, starting to play " + file);
 
