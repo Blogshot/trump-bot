@@ -140,7 +140,6 @@ function playAudio(voiceChannel, file, politician, textChannel) {
     };
 
     voiceChannel.join().then(connection => {
-        console.log("Joined channel, starting to play " + file);
 
         connection.playFile(file).on("end", () => {
 
