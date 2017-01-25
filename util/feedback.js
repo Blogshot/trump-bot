@@ -2,9 +2,14 @@ module.exports = {
 
   writeMessage: function (channel, text) {
     channel.sendMessage(text).catch(error => {
-      // split logging to get whole response. error.toString just gets the message
-      console.log("Error sending message:\n");
-      console.log(error);
+
+      // message could not be send, try to communicate using another channel
+      var channels = Array.from(channel.guild.channels.values());
+
+      // try first channel (i=0)
+      checkChannel(channels,
+        text + "\n\n(This message was meant to be sent to channel '"
+        + channel.name + "', but I don't have permission to write there)", 0)
     });
   },
 
@@ -26,4 +31,22 @@ module.exports = {
   + "Keeping the server running costs money, please consider donating. Visit https://trump.knotti.org for more info.\n\n"
   + "If you need assistance or want to share feedback, contact Bloggi#7559 or join the support-discord: https://discord.gg/MzfyfTm"
 
+}
+
+function checkChannel(channels, text, i) {
+
+  var channel = channels[i];
+
+  // make sure it's a text-channel
+  if (channel.type == "text") {
+
+    // send message again
+    channel.sendMessage(text).catch(error => {
+      // if message could not be send, try next channel
+      checkChannel(channels, text, i + 1);
+    });
+  } else {
+    // if its not a text-channel, skip it
+    checkChannel(channels, text, i + 1);
+  }
 }
