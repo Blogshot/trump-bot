@@ -191,8 +191,18 @@ function getRandomAudio(politician) {
     return "./audio/" + politician + "/" + files[index];
 }
 
+var lastWrite;
 function writeStats() {
+    
+    // return if lastWrite was less than 5secs
+    if ((Date.now() - lastWrite) < 5000) {
+        return;
+    }
 
+    // Set current time    
+    lastWrite = Date.now();
+
+    // write current stats
     var fs = require('fs');
     var fileName = './stats.json';
     var file = require(fileName);
