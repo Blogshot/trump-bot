@@ -15,9 +15,6 @@ var merkel = stats.merkel == null ? 0 : stats.merkel;
 
 // cache audios in memory
 // TODO
-var trumpAudios;
-var clintonAudios;
-var merkelAudios;
 
 // set listeners
 setListeners(client);
@@ -217,7 +214,7 @@ function writeStats() {
         var file = require(fileName);
 
         file.played = played;
-        file.guildCount = results;
+        file.guildCount = results[0];
         file.trump = trump;
         file.clinton = clinton;
         file.merkel = merkel;
