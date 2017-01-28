@@ -13,6 +13,10 @@ sudo apt-get install -y nodejs
 
 ### Download FFMPEG. 
 
+#### Debian/Ubuntu
+`apt-get install ffmpeg`
+
+#### Alternative download/install:
 Download the appropriate package from here: https://ffmpeg.org/download.html
 
 If you're a Windows user, you'll have to [edit your environment variables](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
