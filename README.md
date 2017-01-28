@@ -11,6 +11,16 @@ sudo apt-get install -y nodejs
 
 `npm install discord.js node-opus --save`
 
+### Download FFMPEG. 
+
+#### Debian/Ubuntu
+`apt-get install ffmpeg`
+
+#### Alternative download/install:
+Download the appropriate package from here: https://ffmpeg.org/download.html
+
+If you're a Windows user, you'll have to [edit your environment variables](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
+
 ### Create a file named `stats.json` to store statistics:
 ```
 {
