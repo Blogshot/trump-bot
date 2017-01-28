@@ -2,6 +2,8 @@ const stats = require('./stats.json');
 const config = require('./config.js');
 const Discord = require('discord.js');
 const feedback = require('./util/feedback');
+const fs = require('fs');
+
 
 const client = new Discord.Client();
 const token = config.token;
@@ -11,6 +13,13 @@ var trump = stats.trump == null ? 0 : stats.trump;
 var clinton = stats.clinton == null ? 0 : stats.clinton;
 var merkel = stats.merkel == null ? 0 : stats.merkel;
 
+// cache audios in memory
+// TODO
+var trumpAudios;
+var clintonAudios;
+var merkelAudios;
+
+// set listeners
 setListeners(client);
 
 // log our bot in
@@ -193,31 +202,32 @@ function getRandomAudio(politician) {
 
 var lastWrite;
 function writeStats() {
-    
-    // return if lastWrite was less than 5secs
-    if ((Date.now() - lastWrite) < 5000) {
-        return;
-    }
 
-    // Set current time    
-    lastWrite = Date.now();
-
-    // write current stats
-    var fs = require('fs');
-    var fileName = './stats.json';
-    var file = require(fileName);
-
-    file.played = played;
-    file.guildCount = client.guilds.size;
-    file.trump = trump;
-    file.clinton = clinton;
-    file.merkel = merkel;
-
-    fs.writeFile(
-        fileName,
-        JSON.stringify(file, null, 2),
-        function (error) {
-            if (error) return console.log(error);
+    client.shard.fetchClientValues('guilds.size').then(results => {
+        // return if lastWrite was less than 5secs
+        if ((Date.now() - lastWrite) < 5000) {
+            return;
         }
-    );
+
+        // Set current time    
+        lastWrite = Date.now();
+
+        // write current stats
+        var fileName = './stats.json';
+        var file = require(fileName);
+
+        file.played = played;
+        file.guildCount = results;
+        file.trump = trump;
+        file.clinton = clinton;
+        file.merkel = merkel;
+
+        fs.writeFile(
+            fileName,
+            JSON.stringify(file, null, 2),
+            function (error) {
+                if (error) return console.log(error);
+            }
+        );
+    }).catch(console.error);
 }
