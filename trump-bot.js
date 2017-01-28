@@ -206,6 +206,11 @@ function writeStats() {
             return;
         }
 
+        var guildSum = 0;
+        for (var i = 0; i < results.length; i++) {
+            guildSum += results[i];
+        }
+
         // Set current time    
         lastWrite = Date.now();
 
@@ -214,7 +219,7 @@ function writeStats() {
         var file = require(fileName);
 
         file.played = played;
-        file.guildCount = results[0];
+        file.guildCount = guildSum;
         file.trump = trump;
         file.clinton = clinton;
         file.merkel = merkel;
