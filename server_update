@@ -12,4 +12,4 @@ curl \
   -H "Authorization: <token>" \
   -H "Content-Type: application/json" \
   -d $data \
-  https://bots.discord.pw/api/bots/247869756609265664/stats;
+  https://bots.discord.pw/api/bots/<bot-id>/stats;
