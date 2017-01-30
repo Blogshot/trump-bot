@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#
+# Update-Script for https://bots.discord.pw
+#
+
+
 # cd into bot-directory
 cd /root/discord-bots/Trump-Bot;
 
