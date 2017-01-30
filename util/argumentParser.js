@@ -11,8 +11,6 @@ module.exports = {
 
             var argument = argumentList[a].trim();
 
-            console.log("Argument: " + argument);
-
             // help-message
             if (argument == "--help" || argument == "-h") {
 
@@ -206,8 +204,7 @@ function getAudio(politician, pattern) {
 
         // get matches
         if (file.match(regex)) {
-
-            console.log(file + " matches!");
+            // add matched file
             candidates.push(folder + "/" + file);
         }
     }

@@ -2,8 +2,8 @@ const stats = require('./stats.json');
 const config = require('./config.js');
 const Discord = require('discord.js');
 const feedback = require('./util/feedback');
+const logger = require('./util/logger')
 const fs = require('fs');
-
 
 const client = new Discord.Client();
 const token = config.token;
@@ -25,20 +25,20 @@ client.login(token);
 function setListeners(client) {
 
     process.on('uncaughtException', function (exception) {
-        console.log("Global error: " + exception);
+        logger.log("Global error: " + exception);
     });
 
     process.on("unhandledRejection", err => {
-        console.error("Uncaught Promise Error: \n" + err.stack);
+        logger.log("Uncaught Promise Error: \n" + err.stack);
     });
 
     client.on('ready', () => {
         client.user.setStatus('online', '!trump --help');
-        console.log("Ready!");
+        logger.log("Ready!");
     });
 
     client.on("disconnect", () => {
-        console.log("Disconnected!");
+        logger.log("Disconnected!");
     });
 
     // create listener for messages
@@ -49,7 +49,6 @@ function setListeners(client) {
 }
 
 function handleMessage(message) {
-
     var content = message.content.toLowerCase();
     var textChannel = message.channel;
     var guild = message.guild;
@@ -103,13 +102,12 @@ function handleMessage(message) {
     }
 
     if (options.play) {
-
-        if (options.voiceChannel == null) {
-            textChannel.sendMessage('You have to be in a voice channel to do this.');
-        } else {
+        if (options.voiceChannel) {
             checkMilestones(textChannel, options.author);
 
             playAudio(options.voiceChannel, options.file, politician, textChannel);
+        } else {
+            options.message = "You have to be in a voice channel to do this.";
         }
     }
 
@@ -176,7 +174,7 @@ function checkMilestones(textChannel, user) {
     // if the sound is a multiple of 10000
     if (played + 1 % 10000 == 0) {
 
-        console.log("Milestone reached!");
+        logger.log("Milestone reached!");
 
         textChannel.sendMessage(
             user.username
@@ -228,7 +226,7 @@ function writeStats() {
             fileName,
             JSON.stringify(file, null, 2),
             function (error) {
-                if (error) return console.log(error);
+                if (error) return logger.log(error);
             }
         );
     }).catch(console.error);
