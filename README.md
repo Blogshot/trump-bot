@@ -9,8 +9,6 @@ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-`npm install discord.js node-opus --save`
-
 ### Download FFMPEG. 
 
 #### Debian/Ubuntu
@@ -36,6 +34,11 @@ module.exports = {
   token: "<bot-token>"
 };
 ```
+
+### Create a file named `package.json` to enable npm installation
+`npm init`  
+and then  
+`npm install discord.js node-opus --save`
 
 ### Start the bot
 
