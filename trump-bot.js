@@ -24,6 +24,9 @@ client.login(token);
 
 function setListeners(client) {
 
+    /* 
+    Disabled because this catches all kinds of errors that should be debugged instead of ignored.
+    
     process.on('uncaughtException', function (exception) {
         logger.log("Global error: " + exception);
     });
@@ -31,14 +34,19 @@ function setListeners(client) {
     process.on("unhandledRejection", err => {
         logger.log("Uncaught Promise Error: \n" + err.stack);
     });
-
+*/
     client.on('ready', () => {
         client.user.setStatus('online', '!trump --help');
         logger.log("Ready!");
     });
 
-    client.on("disconnect", () => {
-        logger.log("Disconnected!");
+    client.on("disconnect", closeevent => {
+        logger.log("Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
+
+        if (closeevent.code != 4005) {
+            logger.log("Reconnecting automatically...");
+            client.destroy().then(() => client.login(token))
+        }
     });
 
     // create listener for messages
@@ -68,6 +76,8 @@ function handleMessage(message) {
     if (politician == null) {
         return;
     }
+
+    logger.log("  Handling message: '" + content + "'")
 
     var options = new Object();
 
