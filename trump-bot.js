@@ -36,8 +36,15 @@ function setListeners(client) {
     });
 */
     client.on('ready', () => {
-        client.user.setStatus('online', '!trump --help');
         logger.log("Ready!");
+
+        // wait 10 seconds after ready to ensure readiness and set status
+        setTimeout(function () {
+            logger.log("Status set");
+            client.user.setStatus('online');
+            client.user.setGame("!trump --help");
+        }, 10000);
+
     });
 
     client.on("disconnect", closeevent => {
