@@ -238,6 +238,7 @@ function writeStats() {
         file.trump = trump;
         file.clinton = clinton;
         file.merkel = merkel;
+        file.shards = results.length;
 
         fs.writeFile(
             fileName,
