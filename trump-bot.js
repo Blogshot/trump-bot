@@ -92,7 +92,7 @@ function handleMessage(message) {
     options.voiceChannel = message.member.voiceChannel;
     options.play = true;
     options.file = getRandomAudio(politician);
-    options.author = message.author;
+    options.username = message.author.username;
 
     // has arguments?
     content = content.replace("!" + politician, "").trim();
@@ -120,7 +120,7 @@ function handleMessage(message) {
 
     if (options.play) {
         if (options.voiceChannel) {
-            checkMilestones(textChannel, options.author);
+            checkMilestones(textChannel, options.username);
 
             playAudio(options.voiceChannel, options.file, politician, textChannel);
         } else {
@@ -186,7 +186,7 @@ function playAudio(voiceChannel, file, politician, textChannel) {
     });
 }
 
-function checkMilestones(textChannel, user) {
+function checkMilestones(textChannel, username) {
 
     // if the sound is a multiple of 10000
     if (played + 1 % 10000 == 0) {
@@ -194,7 +194,7 @@ function checkMilestones(textChannel, user) {
         logger.log("Milestone reached!");
 
         textChannel.sendMessage(
-            user.username
+            username
             + " just broke the "
             + played + 1
             + "-milestone! Congratulations, have a friendly handshake! :handshake:");
