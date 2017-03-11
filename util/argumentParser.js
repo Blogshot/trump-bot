@@ -182,7 +182,7 @@ function getStats(client) {
         + "                          \t(" + dateString + ")"
         + "\n"
         + "Currently active guilds:  \t"
-        + client.guilds.size
+        + stats.guildCount
         + "```";
 }
 
