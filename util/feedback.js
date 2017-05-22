@@ -2,7 +2,7 @@ module.exports = {
 
   writeMessage: function (channel, text) {
 
-    channel.sendMessage(text).catch(error => {
+    channel.send(text).catch(error => {
       // message could not be send, try to communicate using another channel
       var channels = Array.from(channel.guild.channels.values());
 
@@ -22,7 +22,6 @@ module.exports = {
   + "  -c <channel>\tSpecify voice channel to join\n"
   + "  -f <pattern>\tSpecify sound file to play. Wildcard: *\n"
   + "  --sounds    \tList all available sound files\n"
-  + "  --stats     \tPrint a short summary of statistics\n"
   + "  --leave     \tForce-leave the current channel\n\n"
   + "Examples:\n"
   + "!trump -f big-china.mp3 -c General\n"
@@ -49,7 +48,7 @@ function checkChannel(channels, text, i) {
   }
 
   // send message again
-  channel.sendMessage(text).catch(error => {
+  channel.send(text).catch(error => {
     // if message could not be send, try next channel
     checkChannel(channels, text, i + 1);
   });
