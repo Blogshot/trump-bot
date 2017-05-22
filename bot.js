@@ -211,6 +211,10 @@ function writeStats() {
         // Set current time    
         lastWrite = Date.now();
 
+        // write current stats
+        var fileName = './stats.json';
+        var file = require(fileName);
+
         file.guildCount = guildSum;
         file.shards = results.length;
 
