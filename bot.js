@@ -38,7 +38,7 @@ function setListeners(client) {
         setTimeout(function () {
             logger.log("Status set");
             client.user.setStatus('online');
-            client.user.setGame("!trump --help");
+            client.user.setGame("!trump --help (" + client.shard.id + ")");
         }, 10000);
 
     });
@@ -161,11 +161,11 @@ function isBusyInGuild(guild) {
 function playAudio(voiceChannel, file, politician, textChannel) {
 
     // check for permissions first
-    if (!voiceChannel.permissionsFor(client.user.id).hasPermission("CONNECT")) {
+    if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
         feedback.writeMessage(textChannel, "No permission to join this channel.")
         return;
     };
-    if (!voiceChannel.permissionsFor(client.user.id).hasPermission("SPEAK")) {
+    if (!voiceChannel.permissionsFor(client.user.id).has("SPEAK")) {
         feedback.writeMessage(textChannel, "No permission to speak in this channel.")
         return;
     };
