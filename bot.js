@@ -132,8 +132,6 @@ function handleMessage(message) {
 
     if (options.play) {
         if (options.voiceChannel) {
-            checkMilestones(textChannel, options.username);
-
             playAudio(options.voiceChannel, options.file, politician, textChannel);
         } else {
             options.message = "You have to be in a voice channel to do this.";
