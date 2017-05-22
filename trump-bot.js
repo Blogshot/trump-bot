@@ -8,10 +8,6 @@ const fs = require('fs');
 const client = new Discord.Client();
 const token = config.token;
 
-var played = stats.played == null ? 0 : stats.played;
-var trump = stats.trump == null ? 0 : stats.trump;
-var clinton = stats.clinton == null ? 0 : stats.clinton;
-var merkel = stats.merkel == null ? 0 : stats.merkel;
 
 // cache audios in memory
 // TODO
@@ -46,6 +42,11 @@ function setListeners(client) {
         }, 10000);
 
     });
+
+    client.on('guildCreate', guild => {
+        writeStats();
+    });
+
 
     client.on("disconnect", closeevent => {
         logger.log("Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
@@ -163,43 +164,13 @@ function playAudio(voiceChannel, file, politician, textChannel) {
     voiceChannel.join().then(connection => {
 
         connection.playFile(file).on("end", () => {
-
             connection.disconnect();
             voiceChannel.leave();
-            played++;
-
-            if (politician == "trump") {
-                trump++;
-            }
-            if (politician == "clinton") {
-                clinton++;
-            }
-            if (politician == "merkel") {
-                merkel++;
-            }
-
-            writeStats();
         });
 
     }).catch(error => {
         feedback.writeMessage(textChannel, error.toString());
     });
-}
-
-function checkMilestones(textChannel, username) {
-
-    // if the sound is a multiple of 10000
-    if (played + 1 % 10000 == 0) {
-
-        logger.log("Milestone reached!");
-
-        textChannel.sendMessage(
-            username
-            + " just broke the "
-            + played + 1
-            + "-milestone! Congratulations, have a friendly handshake! :handshake:");
-    }
-
 }
 
 function getRandomAudio(politician) {
@@ -229,15 +200,7 @@ function writeStats() {
         // Set current time    
         lastWrite = Date.now();
 
-        // write current stats
-        var fileName = './stats.json';
-        var file = require(fileName);
-
-        file.played = played;
         file.guildCount = guildSum;
-        file.trump = trump;
-        file.clinton = clinton;
-        file.merkel = merkel;
         file.shards = results.length;
 
         fs.writeFile(

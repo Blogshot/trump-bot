@@ -164,25 +164,13 @@ function getStats(client) {
 
     return "Current stats:\n"
         + "```"
-        + "Activated:                \t"
-        + stats.played
-        + "\n"
-        + "  ∟-- Trump:              \t"
-        + stats.trump
-        + "\n"
-        + "  ∟-- Clinton:            \t"
-        + stats.clinton
-        + "\n"
-        + "  ∟-- Merkel:             \t"
-        + stats.merkel
-        + "\n"
         + "Uptime of current session:\t"
         + uptimeString
         + "\n"
         + "                          \t(" + dateString + ")"
         + "\n"
         + "Currently active guilds:  \t"
-        + stats.guildCount
+        + stats.guildCount + " (" + stats.shards + " shards)"
         + "```";
 }
 
