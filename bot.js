@@ -48,10 +48,18 @@ function setListeners(client) {
     });
 
 
+    client.on('reconnecting', () => {
+        logger.log("Reconnecting shard " + client.shard.id);
+    });
+
     client.on("disconnect", closeevent => {
         logger.log("Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
 
-        if (closeevent.code != 4005) {
+        // https://github.com/hammerandchisel/discord-api-docs/issues/33
+        // 4005 == already authenticated
+        // 4004 == authentication failed
+
+        if (closeevent.code != 4005 && closeevent.code != 4004) {
             logger.log("Reconnecting automatically...");
             client.destroy().then(() => client.login(token))
         }
