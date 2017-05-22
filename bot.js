@@ -47,7 +47,6 @@ function setListeners(client) {
         writeStats();
     });
 
-
     client.on('reconnecting', () => {
         logger.log("Reconnecting shard " + client.shard.id);
     });
@@ -59,10 +58,14 @@ function setListeners(client) {
         // 4005 == already authenticated
         // 4004 == authentication failed
 
-        if (closeevent.code != 4005 && closeevent.code != 4004) {
-            logger.log("Reconnecting automatically...");
-            client.destroy().then(() => client.login(token))
+        if (closeevent.code == 4005 ||
+            closeevent.code == 4004) {
+            return;
         }
+
+        logger.log("Reconnecting automatically...");
+        client.destroy().then(() => client.login(token))
+
     });
 
     // create listener for messages
