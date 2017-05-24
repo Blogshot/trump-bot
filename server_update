@@ -6,7 +6,7 @@
 
 
 # cd into bot-directory
-cd /root/discord-bots/Trump-Bot;
+cd $pwd;
 
 # grab guild-count from stats.json
 data=$(cat stats.json | jq -r '.guildCount');
