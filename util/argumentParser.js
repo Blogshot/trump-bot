@@ -160,7 +160,7 @@ function getStats(client) {
 
     var date = new Date(Date.now() - client.uptime);
 
-    var dateString = date.getFullYear() + "/" + date.getMonth() + 1 + "/" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var dateString = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
     return "Current stats:\n"
         + "```"
