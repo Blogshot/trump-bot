@@ -1,7 +1,7 @@
 // tools.js
 // ========
 module.exports = {
-    parse: function (options, client, argumentString, politician, guild) {
+    parse: function (options, client, argumentString, politician, guild, author) {
 
         var feedback = require('./feedback');
 
@@ -89,7 +89,7 @@ module.exports = {
             } else if (argument == "--sounds") {
 
                 //feedback.printSounds(client, textChannel);
-                options.message = getSounds(politician);
+                author.send(getSounds(politician));
 
                 /*
                  print stats to channel
@@ -107,7 +107,7 @@ module.exports = {
 
                 // unknown argument, print help and exit
                 options.message = "You entered an unknown argument.";
-                
+
             }
         }
 

@@ -79,6 +79,7 @@ function handleMessage(message) {
     var content = message.content.toLowerCase();
     var textChannel = message.channel;
     var guild = message.guild;
+    var author = message.author;
 
     var politician;
 
@@ -107,14 +108,13 @@ function handleMessage(message) {
     options.voiceChannel = message.member.voiceChannel;
     options.play = true;
     options.file = getRandomAudio(politician);
-    options.username = message.author.username;
 
     // has arguments?
     content = content.replace("!" + politician, "").trim();
 
     if (content != "") {
         var argumentParser = require("./util/argumentParser");
-        argumentParser.parse(options, client, content, politician, guild);
+        argumentParser.parse(options, client, content, politician, guild, author);
     }
 
     if (options.leave) {
