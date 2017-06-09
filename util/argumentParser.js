@@ -7,6 +7,8 @@ module.exports = {
 
         var argumentList = getArguments(argumentString);
 
+        options.play = false;
+
         for (a = 0; a < argumentList.length; a++) {
 
             var argument = argumentList[a].trim();
@@ -18,7 +20,6 @@ module.exports = {
                 print help and exit
                  */
                 options.message = feedback.helpText;
-                options.play = false;
 
                 /*
                 custom channel
@@ -52,7 +53,6 @@ module.exports = {
                     // invalid channel, report and exit
                     options.message = "I could not find the voice-channel you specified. Select one of the following:\n"
                         + getVoiceChannelList(channels);
-                    options.play = false;
                 }
 
                 /*
@@ -69,13 +69,12 @@ module.exports = {
 
                     // no match found, cant continue. report and exit
                     options.message = "I could not find a filename matching the pattern you specified.";
-                    options.play = false;
+
                 } else if (candidates.length > 1) {
 
                     // multiple matches
                     options.message = "I found multiple audios matching your pattern. Please select one of the following:\n\n"
                         + candidates.join("\n");
-                    options.play = false;
 
                 } else {
 
@@ -91,22 +90,24 @@ module.exports = {
 
                 //feedback.printSounds(client, textChannel);
                 options.message = getSounds(politician);
-                options.play = false;
 
                 /*
                  print stats to channel
                 */
             } else if (argument == "--stats" || argument == "--statistics") {
+
                 //feedback.printStats(client, textChannel);
                 options.message = getStats(client);
-                options.play = false;
+
             } else if (argument == "--leave") {
+
                 options.leave = true;
-                options.play = false;
+
             } else {
+
                 // unknown argument, print help and exit
                 options.message = "You entered an unknown argument.";
-                options.play = false;
+                
             }
         }
 
