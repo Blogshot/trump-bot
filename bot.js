@@ -1,7 +1,6 @@
 const stats = require('./stats.json');
 const config = require('./config.js');
 const Discord = require('discord.js');
-const feedback = require('./util/feedback');
 const logger = require('./util/logger')
 const fs = require('fs');
 
@@ -114,7 +113,7 @@ function handleMessage(message) {
 
     if (content != "") {
         var argumentParser = require("./util/argumentParser");
-        argumentParser.parse(options, client, content, politician, guild, author);
+        argumentParser.parse(options, client, content, politician, guild, author, textChannel);
     }
 
     if (options.leave) {
@@ -129,7 +128,7 @@ function handleMessage(message) {
     var isBusy = isBusyInGuild(guild);
 
     if (isBusy) {
-        options.message = "I am currently needed in Channel '" + isBusy.name + "'."
+        textChannel.send("I am currently needed in Channel '" + isBusy.name + "'.");
         options.play = false;
     }
 
@@ -137,14 +136,9 @@ function handleMessage(message) {
         if (options.voiceChannel) {
             playAudio(options.voiceChannel, options.file, politician, textChannel);
         } else {
-            options.message = "You have to be in a voice channel to do this.";
+            textChannel.send("You have to be in a voice channel to do this.");
         }
     }
-
-    if (options.message) {
-        feedback.writeMessage(textChannel, options.message);
-    }
-
 }
 
 function isBusyInGuild(guild) {
@@ -165,11 +159,11 @@ function playAudio(voiceChannel, file, politician, textChannel) {
 
     // check for permissions first
     if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
-        feedback.writeMessage(textChannel, "No permission to join this channel.")
+        textChannel.send(textChannel, "No permission to join this channel.")
         return;
     };
     if (!voiceChannel.permissionsFor(client.user.id).has("SPEAK")) {
-        feedback.writeMessage(textChannel, "No permission to speak in this channel.")
+        textChannel.send(textChannel, "No permission to speak in this channel.")
         return;
     };
 
@@ -181,7 +175,7 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         });
 
     }).catch(error => {
-        feedback.writeMessage(textChannel, error.toString());
+        textChannel.send(textChannel, error.toString());
     });
 }
 

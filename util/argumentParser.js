@@ -1,9 +1,7 @@
 // tools.js
 // ========
 module.exports = {
-    parse: function (options, client, argumentString, politician, guild, author) {
-
-        var feedback = require('./feedback');
+    parse: function (options, client, argumentString, politician, guild, author, textChannel) {
 
         var argumentList = getArguments(argumentString);
 
@@ -19,8 +17,36 @@ module.exports = {
                 /*
                 print help and exit
                  */
-                options.message = feedback.helpText;
+                const embed = {
+                    "color": 16000000,
+                    "thumbnail": {
+                        "url": "https://trump.knotti.org/images/favicon.png"
+                    },
+                    "fields": [
+                        {
+                        "name": "Usage",
+                        "value": "!trump | !clinton | !merkel\t[Options]"
+                        },
+                        {
+                        "name": "Options",
+                        "value": "-h, --help       \tShow this message\n-c <channel>\tSpecify voice channel to join\n-f <pattern>  \tSpecify sound file to play. Wildcard: *\n--sounds        \tPMs all available sound files\n--leave            \tForce-leave the current channel"
+                        },
+                        {
+                        "name": "Examples",
+                        "value": "!trump -f big-*.mp3\t- equals !trump -f big-china.mp3\n!clinton --sounds\t\t- Bot PMs all sounds of Clinton\n!merkel -c General\t  - Bot joins channel 'General'"
+                        },
+                        {
+                        "name": "Support",
+                        "value": "If you need help, contact Bloggi#7559 or join the [support-discord](https://discord.gg/MzfyfTm)."
+                        },
+                        {
+                        "name": "Donations",
+                        "value": "Keeping the server running costs money, please consider [donating](https://trump.knotti.org)."
+                        }
+                    ]
+                    };
 
+                textChannel.send("", { embed });
                 /*
                 custom channel
                  */
@@ -51,8 +77,8 @@ module.exports = {
                 if (!found) {
 
                     // invalid channel, report and exit
-                    options.message = "I could not find the voice-channel you specified. Select one of the following:\n"
-                        + getVoiceChannelList(channels);
+                    textChannel.send("I could not find the voice-channel you specified. Select one of the following:\n"
+                        + getVoiceChannelList(channels));
                 }
 
                 /*
@@ -68,13 +94,13 @@ module.exports = {
                 if (candidates.length == 0) {
 
                     // no match found, cant continue. report and exit
-                    options.message = "I could not find a filename matching the pattern you specified.";
+                    textChannel.send("I could not find a filename matching the pattern you specified.");
 
                 } else if (candidates.length > 1) {
 
                     // multiple matches
-                    options.message = "I found multiple audios matching your pattern. Please select one of the following:\n\n"
-                        + candidates.join("\n");
+                    textChannel.send("I found multiple audios matching your pattern. Please select one of the following:\n\n"
+                        + candidates.join("\n"));
 
                 } else {
 
@@ -97,7 +123,7 @@ module.exports = {
             } else if (argument == "--stats" || argument == "--statistics") {
 
                 //feedback.printStats(client, textChannel);
-                options.message = getStats(client);
+                textChannel.send(getStats(client));
 
             } else if (argument == "--leave") {
 
@@ -106,7 +132,7 @@ module.exports = {
             } else {
 
                 // unknown argument, print help and exit
-                options.message = "You entered an unknown argument.";
+                textChannel.send("You entered an unknown argument. (" + argument + ")");
 
             }
         }
