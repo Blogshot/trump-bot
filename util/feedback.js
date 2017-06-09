@@ -12,25 +12,36 @@ module.exports = {
         + channel.name + "', but I don't have permission to write there)", 0);
     });
   },
-
-  helpText: "Trump-Bot usage:\n```\n"
-  + "!trump   [options]\n"
-  + "!clinton [options]\n"
-  + "!merkel  [options]\n"
-  + "\nOptions:\n\n"
-  + "  -h, --help  \tShow this message\n"
-  + "  -c <channel>\tSpecify voice channel to join\n"
-  + "  -f <pattern>\tSpecify sound file to play. Wildcard: *\n"
-  + "  --sounds    \tList all available sound files\n"
-  + "  --leave     \tForce-leave the current channel\n\n"
-  + "Examples:\n"
-  + "!trump -f big-china.mp3 -c General\n"
-  + "!trump -f big-*.mp3 -c General\n"
-  + "```\n"
-  + "Keeping the server running costs money, please consider donating. Visit https://trump.knotti.org for more info.\n\n"
-  + "If you need assistance or want to share feedback, contact Bloggi#7559 or join the support-discord: https://discord.gg/MzfyfTm"
-
 }
+
+const helpText = {
+  "color": 2552552,
+  "thumbnail": {
+    "url": "https://trump.knotti.org/images/favicon.png"
+  },
+  "fields": [
+    {
+      "name": "Usage",
+      "value": "!trump | !clinton | !merkel\t[Options]"
+    },
+    {
+      "name": "Options",
+      "value": "-h, --help       \tShow this message\n-c <channel>\tSpecify voice channel to join\n-f <pattern>  \tSpecify sound file to play. Wildcard: *\n--sounds        \tList all available sound files\n--leave            \tForce-leave the current channel"
+    },
+    {
+      "name": "Examples",
+      "value": "!trump -f big-*.mp3 -c General\n!trump -f big-china.mp3 -c General"
+    },
+    {
+      "name": "Support",
+      "value": "If you need help, contact Bloggi#7559 or join the [support-discord](https://discord.gg/MzfyfTm)."
+    },
+    {
+      "name": "Donations",
+      "value": "Keeping the server running costs money, please consider [donating](https://trump.knotti.org)."
+    }
+  ]
+};
 
 function checkChannel(channels, text, i) {
 
