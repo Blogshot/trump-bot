@@ -26,11 +26,11 @@ const helpText = {
     },
     {
       "name": "Options",
-      "value": "-h, --help       \tShow this message\n-c <channel>\tSpecify voice channel to join\n-f <pattern>  \tSpecify sound file to play. Wildcard: *\n--sounds        \tList all available sound files\n--leave            \tForce-leave the current channel"
+      "value": "-h, --help       \tShow this message\n-c <channel>\tSpecify voice channel to join\n-f <pattern>  \tSpecify sound file to play. Wildcard: *\n--sounds        \tPMs all available sound files\n--leave            \tForce-leave the current channel"
     },
     {
       "name": "Examples",
-      "value": "!trump -f big-*.mp3 -c General\n!trump -f big-china.mp3 -c General"
+      "value": "__!trump -f big-*.mp3__\t- equals __!trump -f big-china.mp3__\n__!clinton --sounds__\t\t- Bot PMs all sounds of Clinton\n__!merkel -c General__\t  - Bot joins channel 'General'"
     },
     {
       "name": "Support",
