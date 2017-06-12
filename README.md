@@ -22,8 +22,8 @@ If you're a Windows user, you'll have to [edit your environment variables](http:
 ### Create a file named `stats.json` to store statistics:
 ```
 {
-  "played": 0,
-  "guildCount": 0
+  "guildCount": 0,
+  "shards": 0
 }
 ```
 
