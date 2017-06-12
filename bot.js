@@ -7,6 +7,7 @@ const fs = require('fs');
 const client = new Discord.Client();
 const token = config.token;
 
+var isSharded = false;
 
 // cache audios in memory
 // TODO
@@ -31,13 +32,16 @@ function setListeners(client) {
     });
 */
     client.on('ready', () => {
-        logger.log("Ready!");
+        // if != null there are shards
+        isSharded = (client.shard != null);
+
+        logger.log(client.shard, "Ready!");
 
         // wait 10 seconds after ready to ensure readiness and set status
         setTimeout(function () {
-            logger.log("Status set");
+            logger.log(client.shard, "Status set");
             client.user.setStatus('online');
-            client.user.setGame("!trump --help (" + client.shard.id + ")");
+            client.user.setGame(isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help");
         }, 10000);
 
     });
@@ -47,11 +51,11 @@ function setListeners(client) {
     });
 
     client.on('reconnecting', () => {
-        logger.log("Reconnecting shard " + client.shard.id);
+        logger.log(client.shard, "Reconnecting shard");
     });
 
     client.on("disconnect", closeevent => {
-        logger.log("Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
+        logger.log(client.shard, "Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
 
         // https://github.com/hammerandchisel/discord-api-docs/issues/33
         // 4005 == already authenticated
@@ -62,7 +66,7 @@ function setListeners(client) {
             return;
         }
 
-        logger.log("Reconnecting automatically...");
+        logger.log(client.shard, "Reconnecting automatically...");
         client.destroy().then(() => client.login(token))
 
     });
@@ -99,7 +103,7 @@ function handleMessage(message) {
         return;
     }
 
-    logger.log("  Handling message: '" + content + "'")
+    logger.log(client.shard, "  Handling message: '" + content + "'")
 
     var options = new Object();
 
@@ -189,36 +193,43 @@ function getRandomAudio(politician) {
     return "./audio/" + politician + "/" + files[index];
 }
 
-var lastWrite;
 function writeStats() {
 
-    client.shard.fetchClientValues('guilds.size').then(results => {
-        // return if lastWrite was less than 5secs
-        if ((Date.now() - lastWrite) < 5000) {
-            return;
+    var stats = new Object();
+
+    stats.guildCount = getGuildCount();
+    stats.shards = client.shard == null ? 0 : client.shard.count;
+
+    // write current stats
+    var fileName = './stats.json';
+    var file = require(fileName);
+
+    file.guildCount = stats.guildCount;
+    file.shards = stats.shards;
+
+    fs.writeFile(
+        fileName,
+        JSON.stringify(file, null, 2),
+        function (error) {
+            if (error) return logger.log(error);
         }
+    );
+}
 
-        var guildSum = 0;
-        for (var i = 0; i < results.length; i++) {
-            guildSum += results[i];
-        }
+function getGuildCount() {
 
-        // Set current time    
-        lastWrite = Date.now();
+    if (isSharded) {
+        client.shard.fetchClientValues('guilds.size').then(results => {
 
-        // write current stats
-        var fileName = './stats.json';
-        var file = require(fileName);
-
-        file.guildCount = guildSum;
-        file.shards = results.length;
-
-        fs.writeFile(
-            fileName,
-            JSON.stringify(file, null, 2),
-            function (error) {
-                if (error) return logger.log(error);
+            var guildSum = 0;
+            for (var i = 0; i < results.length; i++) {
+                guildSum += results[i];
             }
-        );
-    }).catch(console.error);
+
+            return guildSum;
+
+        }).catch(console.error);
+    } else {
+        return client.guilds.size;
+    }
 }

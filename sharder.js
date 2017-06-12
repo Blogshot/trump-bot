@@ -11,10 +11,10 @@ options.totalShards = 'auto';
 const manager = new Discord.ShardingManager('./bot.js', options);
 
 manager.on('launch', shard => {
-    logger.log("===== Launched shard " + shard.id);
+    logger.log(null, "=== Launched shard " + shard.id);
 });
 
-logger.log("Spawning shard(s)");
+logger.log(null, "Spawning shard(s)");
 manager.spawn();
 
 
