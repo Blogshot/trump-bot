@@ -180,14 +180,11 @@ function getStats(client) {
 
     var uptimeString = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
 
-    var seconds = Math.floor((milliseconds / 1000) % 60);
-    var minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
-    var hours = Math.floor(((milliseconds / (1000 * 60 * 60)) % 24));
-    var days = Math.floor(((milliseconds / (1000 * 60 * 60 * 24)) % 30));
-
     var date = new Date(Date.now() - client.uptime);
 
-    var dateString = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    
+    var shards = stats.shards == "0" ? "not sharded" : stats.shards + " shards";
 
     return "Current stats:\n"
         + "```"
@@ -197,7 +194,7 @@ function getStats(client) {
         + "                          \t(" + dateString + ")"
         + "\n"
         + "Currently active guilds:  \t"
-        + stats.guildCount + " (" + stats.shards + " shards)"
+        + stats.guildCount + " (" + shards + ")"
         + "```";
 }
 
