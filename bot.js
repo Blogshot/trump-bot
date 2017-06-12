@@ -163,11 +163,11 @@ function playAudio(voiceChannel, file, politician, textChannel) {
 
     // check for permissions first
     if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
-        textChannel.send(textChannel, "No permission to join this channel.")
+        textChannel.send("No permission to join this channel.")
         return;
     };
     if (!voiceChannel.permissionsFor(client.user.id).has("SPEAK")) {
-        textChannel.send(textChannel, "No permission to speak in this channel.")
+        textChannel.send("No permission to speak in this channel.")
         return;
     };
 
@@ -179,7 +179,7 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         });
 
     }).catch(error => {
-        textChannel.send(textChannel, error.toString());
+        textChannel.send(error.toString());
     });
 }
 
@@ -211,7 +211,7 @@ function writeStats() {
         fileName,
         JSON.stringify(file, null, 2),
         function (error) {
-            if (error) return logger.log(error);
+            if (error) return logger.log(client.shard, error);
         }
     );
 }

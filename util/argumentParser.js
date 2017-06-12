@@ -183,7 +183,7 @@ function getStats(client) {
     var date = new Date(Date.now() - client.uptime);
 
     var dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-    
+
     var shards = stats.shards == "0" ? "not sharded" : stats.shards + " shards";
 
     return "Current stats:\n"
