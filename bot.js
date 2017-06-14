@@ -44,10 +44,11 @@ function setListeners(client) {
             client.user.setGame(isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help");
         }, 10000);
 
-    });
+        // write stats all 30 seconds
+        setInterval(function () {
+            writeStats();
+        }, 30000);
 
-    client.on('guildCreate', guild => {
-        writeStats();
     });
 
     client.on('reconnecting', () => {
@@ -193,12 +194,33 @@ function getRandomAudio(politician) {
     return "./audio/" + politician + "/" + files[index];
 }
 
-function writeStats() {
+function writeStats(stats) {
 
-    var stats = new Object();
 
-    stats.guildCount = getGuildCount();
-    stats.shards = client.shard == null ? 0 : client.shard.count;
+    // if there are no stats to write, create them!
+    if (stats == null) {
+
+        stats = new Object();
+        stats.guildCount = 0;
+        stats.shards = 0;       // 0: no sharding
+
+        if (isSharded) {
+            client.shard.fetchClientValues('guilds.size').then(results => {
+
+                for (var i = 0; i < results.length; i++) {
+                    stats.guildCount += results[i];
+                }
+                stats.shards = client.shard.count;
+
+                // now that we've got stats, call it again this function again
+                writeStats(stats);
+                return;
+
+            }).catch();
+        } else {
+            stats.guildCount = client.guilds.size;
+        }
+    }
 
     // write current stats
     var fileName = './stats.json';
@@ -214,22 +236,4 @@ function writeStats() {
             if (error) return logger.log(client.shard, error);
         }
     );
-}
-
-function getGuildCount() {
-
-    if (isSharded) {
-        client.shard.fetchClientValues('guilds.size').then(results => {
-
-            var guildSum = 0;
-            for (var i = 0; i < results.length; i++) {
-                guildSum += results[i];
-            }
-
-            return guildSum;
-
-        }).catch(console.error);
-    } else {
-        return client.guilds.size;
-    }
 }
