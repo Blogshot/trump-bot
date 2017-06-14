@@ -44,10 +44,13 @@ function setListeners(client) {
             client.user.setGame(isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help");
         }, 10000);
 
-        // write stats all 30 seconds
-        setInterval(function () {
-            writeStats();
-        }, 30000);
+        // write stats every 30 seconds
+        // dont use if the bot is startet by sharder.js!
+        if (!isSharded) {
+            setInterval(function () {
+                writeStats();
+            }, 30000);
+        }
 
     });
 
@@ -194,40 +197,13 @@ function getRandomAudio(politician) {
     return "./audio/" + politician + "/" + files[index];
 }
 
-function writeStats(stats) {
-
-
-    // if there are no stats to write, create them!
-    if (stats == null) {
-
-        stats = new Object();
-        stats.guildCount = 0;
-        stats.shards = 0;       // 0: no sharding
-
-        if (isSharded) {
-            client.shard.fetchClientValues('guilds.size').then(results => {
-
-                for (var i = 0; i < results.length; i++) {
-                    stats.guildCount += results[i];
-                }
-                stats.shards = client.shard.count;
-
-                // now that we've got stats, call it again this function again
-                writeStats(stats);
-                return;
-
-            }).catch();
-        } else {
-            stats.guildCount = client.guilds.size;
-        }
-    }
+function writeStats() {
 
     // write current stats
     var fileName = './stats.json';
     var file = require(fileName);
 
-    file.guildCount = stats.guildCount;
-    file.shards = stats.shards;
+    file.guildCount = client.guilds.size;
 
     fs.writeFile(
         fileName,
