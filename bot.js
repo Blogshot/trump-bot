@@ -110,7 +110,7 @@ function handleMessage(message) {
 
     // make sure the text channel is a guild channel (type = text)
     if (textChannel.type != "text") {
-        message.channel.send("I can't be invoked in private messages, only in guilds.");
+        textChannel.send("I can't be invoked in private messages, only in guilds.");
         return;
     }
 
