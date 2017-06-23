@@ -30,7 +30,8 @@ function setListeners(client) {
     process.on("unhandledRejection", err => {
         logger.log("Uncaught Promise Error: \n" + err.stack);
     });
-*/
+    */
+    
     client.on('ready', () => {
         // if != null there are shards
         isSharded = (client.shard != null);
@@ -104,6 +105,12 @@ function handleMessage(message) {
     }
 
     if (politician == null) {
+        return;
+    }
+
+    // make sure the text channel is a guild channel (type = text)
+    if (textChannel.type != "text") {
+        message.channel.send("I can't be invoked in private messages, only in guilds.");
         return;
     }
 
