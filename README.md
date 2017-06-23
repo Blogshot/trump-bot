@@ -43,7 +43,7 @@ and then
 ### Start the bot
 
 #### Without sharding
-`node trump-bot.js`
+`node bot.js`
 
 #### With sharding
 `node sharder.js`
