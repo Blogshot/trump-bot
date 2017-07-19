@@ -4,9 +4,20 @@ https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&p
 ## USAGE/DEPLOYMENT
 
 ### Install environment
+
+#### Nodejs
+https://nodejs.org/en/download/
+
 ```
-curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
+```
+
+#### Python 2.7 (3.x is not supported by dependencies!)
+https://www.python.org/downloads/
+
+```
+sudo apt-get install python3 
 ```
 
 ### Download FFMPEG. 
@@ -38,7 +49,13 @@ module.exports = {
 ### Create a file named `package.json` to enable npm installation
 `npm init`  
 and then  
-`npm install discord.js node-opus --save`
+`npm install --global --production windows-build-tools` (Windows only)
+`npm install discord.js node-opus --save` 
+
+#### Optional
+For best experience, you may choose to install the following two packages:
+`npm install libsodium-wrappers --save` (faster voice packet encryption and decryption)
+`npm install uws --save` (much faster WebSocket connection)
 
 ### Start the bot
 
