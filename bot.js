@@ -42,7 +42,7 @@ function setListeners(client) {
         setTimeout(function () {
             logger.log(client.shard, "Status set");
             client.user.setStatus('online');
-            client.user.setGame(isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help");
+            client.user.setPresence({game:{ name: (isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help"), type: 0 }});
         }, 10000);
 
         // write stats every 30 seconds
