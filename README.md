@@ -56,8 +56,8 @@ module.exports = {
 
 
 #### Optional
-For best experience, you may choose to install the following two packages:
-`npm install uws@0.14.5 libsodium-wrappers@0.5.4` (faster voice packet encryption and decryption)
+For best experience, you may choose to install the following two packages:  
+`npm install uws@0.14.5 libsodium-wrappers@0.5.4` (faster voice packet encryption and decryption)  
 `npm install discord.js node-opus` (much faster WebSocket connection)
 
 ### Start the bot
