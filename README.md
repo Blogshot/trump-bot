@@ -14,7 +14,7 @@ sudo apt-get install -y nodejs
 ```
 
 #### Python 2.7 (3.x is not supported by dependencies!)
-https://www.python.org/downloads/
+https://www.python.org/downloads/release/python-2714/
 
 ```
 sudo apt-get install python3 
