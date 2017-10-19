@@ -13,24 +13,29 @@ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
+<<<<<<< HEAD
 #### Python 2.7 (3.x is not supported by dependencies!)
 https://www.python.org/downloads/release/python-2714/
+=======
+#### Python 2.7 (3.x is not supported by some dependencies!)
+https://www.python.org/downloads/
+>>>>>>> ce2ec7be7d0c1e185ae92fb9de670b3887814c98
 
 ```
 sudo apt-get install python3 
 ```
 
-### Download FFMPEG. 
+### Download and Install FFMPEG. 
 
 #### Debian/Ubuntu
 `apt-get install ffmpeg`
 
-#### Alternative download/install:
+#### Alternative
 Download the appropriate package from here: https://ffmpeg.org/download.html
 
-If you're a Windows user, you'll have to [edit your environment variables](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
+If you are a Windows user, you will have to [edit your environment variables](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
 
-### Create a file named `stats.json` to store statistics:
+### Create a file named `stats.json` to store statistics
 ```
 {
   "guildCount": 0,
@@ -38,7 +43,7 @@ If you're a Windows user, you'll have to [edit your environment variables](http:
 }
 ```
 
-### Create a file named `config.js` to store configuration data:
+### Create a file named `config.js` to store configuration data (currently only the token)
 ```
 module.exports = {
   // https://discordapp.com/developers/applications/me
@@ -48,14 +53,17 @@ module.exports = {
 
 ### Create a file named `package.json` to enable npm installation
 `npm init`  
-and then  
-`npm install --global --production windows-build-tools` (Windows only)
-`npm install discord.js node-opus --save` 
+
+### Install basic packages
+`npm install --global --production windows-build-tools` (Windows only)  
+`npm install discord.js node-opus` 
+
+
 
 #### Optional
-For best experience, you may choose to install the following two packages:
-`npm install libsodium-wrappers --save` (faster voice packet encryption and decryption)
-`npm install uws --save` (much faster WebSocket connection)
+For best experience, you may choose to install the following two packages:  
+`npm install uws@0.14.5 libsodium-wrappers@0.5.4` (faster voice packet encryption and decryption)  
+`npm install discord.js node-opus` (much faster WebSocket connection)
 
 ### Start the bot
 
