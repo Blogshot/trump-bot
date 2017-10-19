@@ -13,14 +13,8 @@ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-<<<<<<< HEAD
-#### Python 2.7 (3.x is not supported by dependencies!)
-https://www.python.org/downloads/release/python-2714/
-=======
 #### Python 2.7 (3.x is not supported by some dependencies!)
-https://www.python.org/downloads/
->>>>>>> ce2ec7be7d0c1e185ae92fb9de670b3887814c98
-
+https://www.python.org/downloads/release/python-2714/
 ```
 sudo apt-get install python3 
 ```
