@@ -6,7 +6,7 @@ https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&p
 ### Install environment
 
 #### The bot itself
-`git clone https://github.com/Blogshot/trump-bot.git`
+`git clone https://github.com/Blogshot/trump-bot.git`  
 `git checkout js_conversion` 
 
 #### Nodejs
