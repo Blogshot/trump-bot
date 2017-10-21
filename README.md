@@ -5,6 +5,10 @@ https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&p
 
 ### Install environment
 
+#### The bot itself
+`git clone https://github.com/Blogshot/trump-bot.git`  
+`git checkout js_conversion` 
+
 #### Nodejs
 https://nodejs.org/en/download/
 
@@ -14,11 +18,8 @@ sudo apt-get install -y nodejs
 ```
 
 #### Python 2.7 (3.x is not supported by some dependencies!)
-https://www.python.org/downloads/
+https://www.python.org/downloads/release/python-2714/
 
-```
-sudo apt-get install python3 
-```
 
 ### Download and Install FFMPEG. 
 
@@ -52,7 +53,6 @@ module.exports = {
 ### Install basic packages
 `npm install --global --production windows-build-tools` (Windows only)  
 `npm install discord.js node-opus` 
-
 
 
 #### Optional
