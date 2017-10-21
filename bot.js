@@ -31,10 +31,15 @@ function setListeners(client) {
         logger.log("Uncaught Promise Error: \n" + err.stack);
     });
     */
-    
+
     client.on('ready', () => {
         // if != null there are shards
         isSharded = (client.shard != null);
+
+        if (!isSharded) {
+            // write PID-file
+            fs.writeFile('./trump.pid', process.pid);
+        }
 
         logger.log(client.shard, "Ready!");
 
@@ -42,7 +47,7 @@ function setListeners(client) {
         setTimeout(function () {
             logger.log(client.shard, "Status set");
             client.user.setStatus('online');
-            client.user.setPresence({game:{ name: (isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help"), type: 0 }});
+            client.user.setPresence({ game: { name: (isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help"), type: 0 } });
         }, 10000);
 
         // write stats every 30 seconds

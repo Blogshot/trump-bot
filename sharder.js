@@ -4,6 +4,9 @@ const logger = require('./util/logger')
 const config = require('./config.js');
 const fs = require('fs');
 
+// write PID-file
+fs.writeFile('./trump.pid', process.pid);
+
 var options = new Object();
 
 options.token = config.token;
@@ -58,3 +61,4 @@ function getStats(index, guildCount) {
         );
     }
 }
+
