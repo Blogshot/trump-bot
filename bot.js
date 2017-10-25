@@ -108,6 +108,9 @@ function handleMessage(message) {
     if (content.startsWith("!erdogan")) {
         politician = "erdogan";
     }
+    if (content.startsWith("!farage")) {
+        politician = "farage";
+    }
 
     if (politician == null) {
         return;
