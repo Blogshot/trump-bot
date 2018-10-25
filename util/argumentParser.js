@@ -38,10 +38,6 @@ module.exports = {
                         {
                         "name": "Support",
                         "value": "If you need help, contact Bloggi#7559 or join the [support-discord](https://discord.gg/MzfyfTm)."
-                        },
-                        {
-                        "name": "Donations",
-                        "value": "Keeping the server running costs money, please consider [donating](https://trump.knotti.org)."
                         }
                     ]
                     };

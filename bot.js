@@ -198,7 +198,7 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         });
 
     }).catch(error => {
-        textChannel.send(error.toString());
+	logger.log(client.shard, JSON.stringify(error));
     });
 }
 
