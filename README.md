@@ -52,13 +52,12 @@ module.exports = {
 
 ### Install basic packages
 `npm install --global --production windows-build-tools` (Windows only)  
-`npm install discord.js node-opus` 
+`npm install discord.js node-opus@0.2.9` 
 
 
 #### Optional
-For best experience, you may choose to install the following two packages:  
-`npm install uws@0.14.5 libsodium-wrappers@0.5.4` (faster voice packet encryption and decryption)  
-`npm install discord.js node-opus` (much faster WebSocket connection)
+For best experience, you may choose to install the following packages:  
+`npm install bufferutil@3.0.5 (much faster websocket connection)
 
 ### Start the bot
 
