@@ -6,6 +6,7 @@ module.exports = {
         var argumentList = getArguments(argumentString);
 
         options.play = false;
+	options.file = "";
 
         for (a = 0; a < argumentList.length; a++) {
 
@@ -85,7 +86,8 @@ module.exports = {
                 var value = argument.substring(argument.indexOf(" ") + 1);
 
                 // get list of matching files
-                var candidates = getAudio(politician, value);
+                var candidates = getAudio(politician, value, false);
+                var candidatesNames = getAudio(politician, value, true);
 
                 if (candidates.length == 0) {
 
@@ -96,7 +98,7 @@ module.exports = {
 
                     // multiple matches
                     textChannel.send("I found multiple audios matching your pattern. Please select one of the following:\n\n"
-                        + candidates.join("\n"));
+                        + candidatesNames.join("\n"));
 
                 } else {
 
@@ -194,7 +196,7 @@ function getStats(client) {
         + "```";
 }
 
-function getAudio(politician, pattern) {
+function getAudio(politician, pattern, shorten) {
 
     var fs = require('fs');
 
@@ -213,7 +215,11 @@ function getAudio(politician, pattern) {
         // get matches
         if (file.match(regex)) {
             // add matched file
-            candidates.push(folder + "/" + file);
+	    if (shorten) {
+		candidates.push(file);        		
+	    } else {
+		candidates.push(folder + "/" + file);
+	    }
         }
     }
 

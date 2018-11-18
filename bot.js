@@ -77,8 +77,12 @@ function setListeners(client) {
         }
 
         logger.log(client.shard, "Reconnecting automatically...");
-        client.destroy().then(() => client.login(token))
+        client.destroy().then(() => client.login(token));
 
+    });
+
+    client.on('error', error => {
+        logger.log(client.shard, error);
     });
 
     // create listener for messages
@@ -155,7 +159,7 @@ function handleMessage(message) {
         options.play = false;
     }
 
-    if (options.play) {
+    if (options.play && options.file !== "") {
         if (options.voiceChannel) {
             playAudio(options.voiceChannel, options.file, politician, textChannel);
         } else {
@@ -189,6 +193,8 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         textChannel.send("No permission to speak in this channel.")
         return;
     };
+
+    logger.log(client.shard, "Playing " + file);
 
     voiceChannel.join().then(connection => {
 
