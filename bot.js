@@ -115,6 +115,9 @@ function handleMessage(message) {
     if (content.startsWith("!farage")) {
         politician = "farage";
     }
+	if (content.startsWith("!nippel")) {
+        politician = "nippel";
+    }
 
     if (politician == null) {
         return;
