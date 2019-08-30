@@ -26,7 +26,7 @@ module.exports = {
                     "fields": [
                         {
                         "name": "Usage",
-                        "value": "!trump | !clinton | !merkel | !erdogan | !farage\t[Options]"
+                        "value": "!trump | !clinton | !merkel | !erdogan | !farage | !nippel\t[Options]"
                         },
                         {
                         "name": "Options",
