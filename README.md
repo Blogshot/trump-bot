@@ -3,6 +3,9 @@ https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&p
 
 ## USAGE/DEPLOYMENT
 
+### Get a bot token for your installation
+https://discordapp.com/developers/applications/me
+
 ### Docker
 Copy the Dockerfile to your local system with Docker installed and build the image like this:  
 `docker build -t trump-bot .`
