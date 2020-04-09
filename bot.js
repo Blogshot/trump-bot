@@ -205,6 +205,9 @@ function playAudio(voiceChannel, file, politician, textChannel) {
 
         connection.play(file).on("speaking", speaking => {
             if (!speaking) {
+                // the disconnect happens a few ms to early
+                setTimeout(function(){}, 200);
+
                 connection.disconnect();
                 voiceChannel.leave();
             }
