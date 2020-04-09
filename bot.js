@@ -137,7 +137,6 @@ function handleMessage(message) {
 
     // default, will be overwritten by argument if needed
     options.voiceChannel = message.member.voice.channel;
-    options.play = true;
     options.file = getRandomAudio(politician);
 
     // has arguments?
@@ -161,10 +160,10 @@ function handleMessage(message) {
 
     if (isBusy) {
         textChannel.send("I am currently needed in Channel '" + isBusy.name + "'.");
-        options.play = false;
+        options.abort = true;
     }
 
-    if (options.play && options.file !== "") {
+    if (!options.abort) {
         if (options.voiceChannel) {
             playAudio(options.voiceChannel, options.file, politician, textChannel);
         } else {

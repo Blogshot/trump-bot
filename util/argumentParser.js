@@ -5,8 +5,7 @@ module.exports = {
 
         var argumentList = getArguments(argumentString);
 
-        options.play = false;
-	options.file = "";
+        options.abort = false;
 
         for (a = 0; a < argumentList.length; a++) {
 
@@ -18,6 +17,8 @@ module.exports = {
                 /*
                 print help and exit
                  */
+                options.abort = true;
+
                 const embed = {
                     "color": 16000000,
                     "thumbnail": {
@@ -52,16 +53,16 @@ module.exports = {
                 var value = argument.substring(argument.indexOf(" ") + 1);
                 var found = false;
 
-                var channels = Array.from(guild.channels.values());
+                var channels = Array.from(guild.channels.cache);
 
                 // iterate through available channels to find the specified channel
                 for (i = 0; i < channels.length; i++) {
 
-                    var channel = channels[i];
+                    // get GuildChannel-Object (index 1) from current position (i)
+                    var channel = channels[i][1];
 
-                    if (channel.type == "voice" && channel.name.toLowerCase() == value) {
+                    if (channel.type == "voice" && channel.name.toLowerCase() == value.toLowerCase()) {
                         options.voiceChannel = channel;
-                        options.play = true;
                         found = true;
                         break;
                     }
@@ -73,7 +74,8 @@ module.exports = {
                  */
                 if (!found) {
 
-                    // invalid channel, report and exit
+                    // invalid channel, report and set to abort
+                    options.abort = true;
                     textChannel.send("I could not find the voice-channel you specified. Select one of the following:\n"
                         + getVoiceChannelList(channels));
                 }
@@ -91,12 +93,14 @@ module.exports = {
 
                 if (candidates.length == 0) {
 
-                    // no match found, cant continue. report and exit
+                    // no match found, cant continue
+                    options.abort = true;
                     textChannel.send("I could not find a filename matching the pattern you specified.");
 
                 } else if (candidates.length > 1) {
 
-                    // multiple matches
+                    // multiple matches found, cant continue
+                    options.abort = true;
                     textChannel.send("I found multiple audios matching your pattern. Please select one of the following:\n\n"
                         + candidatesNames.join("\n"));
 
@@ -104,13 +108,14 @@ module.exports = {
 
                     // set the only match as desired audio
                     options.file = candidates[0];
-                    options.play = true;
                 }
 
                 /*
                  list all sounds
                 */
             } else if (argument == "--sounds") {
+
+                options.abort = true;
 
                 //feedback.printSounds(client, textChannel);
                 author.send(getSounds(politician));
@@ -120,14 +125,19 @@ module.exports = {
                 */
             } else if (argument == "--stats" || argument == "--statistics") {
 
+                options.abort = true;
+
                 //feedback.printStats(client, textChannel);
                 textChannel.send(getStats(client));
 
             } else if (argument == "--leave") {
 
+                options.abort = true;
                 options.leave = true;
 
             } else {
+
+                options.abort = true;
 
                 // unknown argument, print help and exit
                 textChannel.send("You entered an unknown argument (" + argument + "). Please enter `!trump --help` to view a list of commands.");
@@ -153,7 +163,7 @@ function getVoiceChannelList(channels) {
 
     for (i = 0; i < channels.length; i++) {
 
-        var channel = channels[i];
+        var channel = channels[i][1];
 
         if (channel.type == "voice") {
             voiceChannels += channel.name + "\n";
