@@ -77,3 +77,11 @@ For best experience, you may choose to install the following packages:
 
 #### With sharding
 `node sharder.js`
+
+### Other Requirements ###
+To be able to interact with the bot, it needs to have the following permissions on at least one text channel:
+* Read messages
+* Write messages
+* Embed links
+
+Also, the bot should be permitted to use voice.
