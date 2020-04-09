@@ -55,7 +55,6 @@ Download the appropriate package from here: https://ffmpeg.org/download.html
 ### Create a file named `config.js` to store configuration data (the bot-token)
 ```
 module.exports = {
-  // https://discordapp.com/developers/applications/me
   token: "<bot-token>"
 };
 ```
