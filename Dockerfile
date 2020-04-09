@@ -22,20 +22,10 @@ RUN cd /discord-bots \
   && git checkout js_conversion
 
 # create stats file
-RUN cat > /discord-bots/trump-bot/stats.json  <<'EOF' \
-{ \
-  "guildCount": 0, \
-  "shards": 0 \
-} \
-EOF
+RUN echo '{ "guildCount": 0, "shards": 0 }' > /discord-bots/trump-bot/stats.json  
 
 # create config file
-RUN cat > /discord-bots/trump-bot/config.js <<'EOF' \
-module.exports = { \
-    // https://discordapp.com/developers/applications/me \
-    token: "auth_token_here" \
-  }; \
-EOF
+RUN echo 'module.exports = { token: "auth_token_here" };' > /discord-bots/trump-bot/config.js
 
 # create init-script and make it executable
 COPY entry.sh /entry.sh
