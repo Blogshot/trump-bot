@@ -130,7 +130,7 @@ module.exports = {
             } else {
 
                 // unknown argument, print help and exit
-                textChannel.send("You entered an unknown argument. (" + argument + ")");
+                textChannel.send("You entered an unknown argument (" + argument + "). Please enter `trump --help` to view a list of commands.");
 
             }
         }
@@ -216,7 +216,7 @@ function getAudio(politician, pattern, shorten) {
         if (file.match(regex)) {
             // add matched file
 	    if (shorten) {
-		candidates.push(file);        		
+		candidates.push(file);
 	    } else {
 		candidates.push(folder + "/" + file);
 	    }
