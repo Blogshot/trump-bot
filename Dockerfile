@@ -28,7 +28,7 @@ RUN echo '{ "guildCount": 0, "shards": 0 }' > /discord-bots/trump-bot/stats.json
 RUN echo 'module.exports = { token: "auth_token_here" };' > /discord-bots/trump-bot/config.js
 
 # create init-script and make it executable
-COPY entry.sh /entry.sh
+RUN echo 'node /discord-bots/trump-bot/bot.js' > /entry.sh
 RUN chmod +x /entry.sh
 
 # convert entry script to unix line endings if needed
