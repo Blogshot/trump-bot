@@ -5,7 +5,14 @@ const config = require('./config.js');
 const fs = require('fs');
 
 // write PID-file
-fs.writeFile('./trump.pid', process.pid);
+fs.writeFile(
+    './trump.pid',
+    process.pid,
+    function (error) {
+        if (error) return logger.log(null, error);
+    }
+);
+
 
 var options = new Object();
 
@@ -21,7 +28,6 @@ manager.on('launch', shard => {
 logger.log(null, "Spawning shard(s)");
 manager.spawn();
 
-
 // write stats all 30 seconds
 setInterval(function () {
     getStats(0, 0);
@@ -34,7 +40,7 @@ function getStats(index, guildCount) {
     // if there are more shards to go
     if (index < shardList.length) {
 
-        // get guildCount of that shard and recurse 
+        // get guildCount of that shard and recurse
         shardList[index].fetchClientValue('guilds.size').then(count => {
             guildCount += count;
 

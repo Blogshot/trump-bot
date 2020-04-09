@@ -8,12 +8,13 @@ https://discordapp.com/developers/applications/me
 
 ### Docker
 Copy the Dockerfile to your local system with Docker installed and build the image like this:  
-`docker build -t trump-bot .`
+`docker build --build-arg token=<token> -t trump-bot .`
 
 Afterwards, run the image via executing:  
-`docker run trump-bot --env token=<your-token-here>`
+`docker run --name trump-bot -d trump-bot`
 
-Your container should come up and start deploying shards. 
+Your container should come up and start deploying shards. You can view it's progress via:
+`docker logs -f trump-bot`
 
 ### Custom environment installation
 
@@ -25,7 +26,7 @@ Your container should come up and start deploying shards.
 https://nodejs.org/en/download/
 
 ```
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
@@ -64,7 +65,7 @@ module.exports = {
 
 ### Install basic packages
 `npm install --global --production windows-build-tools` (Windows only)  
-`npm install discord.js node-opus@0.2.9` 
+`npm install discord.js @discordjs/opus` 
 
 #### Optional
 For best experience, you may choose to install the following packages:  

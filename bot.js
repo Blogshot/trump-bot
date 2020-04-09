@@ -20,9 +20,9 @@ client.login(token);
 
 function setListeners(client) {
 
-    /* 
+    /*
     Disabled because this catches all kinds of errors that should be debugged instead of ignored.
-    
+
     process.on('uncaughtException', function (exception) {
         logger.log("Global error: " + exception);
     });
@@ -38,17 +38,19 @@ function setListeners(client) {
 
         if (!isSharded) {
             // write PID-file
-            fs.writeFile('./trump.pid', process.pid);
+            fs.writeFile(
+                './trump.pid',
+                process.pid,
+                function (error) {
+                    if (error) return logger.log(null, error);
+                }
+            );
         }
 
-        logger.log(client.shard, "Ready!");
+        client.user.setStatus('online');
+        client.user.setPresence({ activity: { name: (isSharded ? "!trump --help (" + client.shard.ids + ")" : "!trump --help"), status: 'idle' } });
 
-        // wait 10 seconds after ready to ensure readiness and set status
-        setTimeout(function () {
-            logger.log(client.shard, "Status set");
-            client.user.setStatus('online');
-            client.user.setPresence({ game: { name: (isSharded ? "!trump --help (" + client.shard.id + ")" : "!trump --help"), type: 0 } });
-        }, 10000);
+        logger.log(client.shard.ids, "Ready!");
 
         // write stats every 30 seconds
         // dont use if the bot is startet by sharder.js!
@@ -61,11 +63,11 @@ function setListeners(client) {
     });
 
     client.on('reconnecting', () => {
-        logger.log(client.shard, "Reconnecting shard");
+        logger.log(client.shard.ids, "Reconnecting shard");
     });
 
     client.on("disconnect", closeevent => {
-        logger.log(client.shard, "Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
+        logger.log(client.shard.ids, "Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
 
         // https://github.com/hammerandchisel/discord-api-docs/issues/33
         // 4005 == already authenticated
@@ -76,13 +78,13 @@ function setListeners(client) {
             return;
         }
 
-        logger.log(client.shard, "Reconnecting automatically...");
+        logger.log(client.shard.ids, "Reconnecting automatically...");
         client.destroy().then(() => client.login(token));
 
     });
 
     client.on('error', error => {
-        logger.log(client.shard, error);
+        logger.log(client.shard.ids, error);
     });
 
     // create listener for messages
@@ -129,12 +131,12 @@ function handleMessage(message) {
         return;
     }
 
-    logger.log(client.shard, "  Handling message: '" + content + "'")
+    logger.log(client.shard.ids, "Handling message: '" + content + "'");
 
     var options = new Object();
 
     // default, will be overwritten by argument if needed
-    options.voiceChannel = message.member.voiceChannel;
+    options.voiceChannel = message.member.voice.channel;
     options.play = true;
     options.file = getRandomAudio(politician);
 
@@ -147,7 +149,7 @@ function handleMessage(message) {
     }
 
     if (options.leave) {
-        var voiceConnection = client.voiceConnections.get(guild.id);
+        var voiceConnection = client.voice.connections.get(guild.id);
 
         if (voiceConnection) {
             voiceConnection.disconnect();
@@ -173,7 +175,7 @@ function handleMessage(message) {
 
 function isBusyInGuild(guild) {
 
-    var connections = Array.from(client.voiceConnections.values());
+    var connections = Array.from(client.voice.connections.values());
 
     for (i = 0; i < connections.length; i++) {
         var connection = connections[i];
@@ -197,17 +199,19 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         return;
     };
 
-    logger.log(client.shard, "Playing " + file);
+    logger.log(client.shard.ids, "Playing " + file);
 
     voiceChannel.join().then(connection => {
 
-        connection.playFile(file).on("end", () => {
-            connection.disconnect();
-            voiceChannel.leave();
+        connection.play(file).on("speaking", speaking => {
+            if (!speaking) {
+                connection.disconnect();
+                voiceChannel.leave();
+            }
         });
 
     }).catch(error => {
-	logger.log(client.shard, JSON.stringify(error));
+	logger.log(client.shard.ids, JSON.stringify(error));
     });
 }
 
@@ -233,7 +237,7 @@ function writeStats() {
         fileName,
         JSON.stringify(file, null, 2),
         function (error) {
-            if (error) return logger.log(client.shard, error);
+            if (error) return logger.log(client.shard.ids, error);
         }
     );
 }

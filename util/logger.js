@@ -3,7 +3,7 @@ module.exports = {
     log: function (shard, message) {
         var date = new Date();
 
-        var shard_string = (shard == null) ? "" : " ==== " + shard.id;
+        var shard_string = (shard == null) ? "" : " ==== " + shard;
 
         // "[30.1.2017 10:44:19] - Here is your message."
         console.log(
