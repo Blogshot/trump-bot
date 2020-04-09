@@ -130,7 +130,7 @@ module.exports = {
             } else {
 
                 // unknown argument, print help and exit
-                textChannel.send("You entered an unknown argument (" + argument + "). Please enter `trump --help` to view a list of commands.");
+                textChannel.send("You entered an unknown argument (" + argument + "). Please enter `!trump --help` to view a list of commands.");
 
             }
         }
