@@ -198,18 +198,12 @@ function playAudio(voiceChannel, file, politician, textChannel) {
         return;
     };
 
-    logger.log(client.shard.ids, "Playing " + file);
-
     voiceChannel.join().then(connection => {
 
-        connection.play(file).on("speaking", speaking => {
-            if (!speaking) {
-                // the disconnect happens a few ms to early
-                setTimeout(function(){}, 200);
+        logger.log(client.shard.ids, "Queuing " + file);
 
-                connection.disconnect();
-                voiceChannel.leave();
-            }
+        connection.play(fs.createReadStream(file), { type: 'ogg/opus' }).on("finish", () => {
+            voiceChannel.leave();
         });
 
     }).catch(error => {
