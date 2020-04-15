@@ -1,14 +1,6 @@
 FROM node:12
 LABEL maintainer knottsascha@gmail.com
 
-# install apt dependencies
-RUN apt update && apt install -y \
-  git \
-  dos2unix \
-  nodejs \
-  ffmpeg \
-  && rm -rf /var/lib/apt/lists/*
-
 # install npm dependencies
 RUN npm install discord.js @discordjs/opus
 
@@ -16,6 +8,7 @@ RUN npm install discord.js @discordjs/opus
 RUN mkdir -p /discord-bots/trump-bot
 WORKDIR /discord-bots/trump-bot
 
+# copy source code into container
 COPY . .
 
 # create stats file
