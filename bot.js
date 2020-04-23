@@ -165,7 +165,7 @@ function handleMessage(message) {
 
     if (!options.abort) {
         if (options.voiceChannel) {
-            playAudio(options.voiceChannel, options.file, politician, textChannel);
+            playAudio(options.voiceChannel, options.file, textChannel);
         } else {
             textChannel.send("You have to be in a voice channel to do this.");
         }
@@ -186,7 +186,7 @@ function isBusyInGuild(guild) {
     return false;
 }
 
-function playAudio(voiceChannel, file, politician, textChannel) {
+function playAudio(voiceChannel, file, textChannel) {
 
     // check for permissions first
     if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
