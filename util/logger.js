@@ -8,7 +8,7 @@ module.exports = {
         // "[30.1.2017 10:44:19] - Here is your message."
         console.log(
             "[" + date.toLocaleDateString() + " " + date.toLocaleTimeString() + "] " +
-            shard_string + " " + message
+            shard_string + " " + JSON.stringify(message, null, 2)
         );
     }
 }

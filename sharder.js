@@ -35,17 +35,16 @@ setInterval(function () {
 
 function getStats(index, guildCount) {
 
-    var shardList = manager.shards.array();
+    var shardList = manager.shards;
 
     // if there are more shards to go
     if (index < shardList.length) {
 
         // get guildCount of that shard and recurse
-        shardList[index].fetchClientValue('guilds.size').then(count => {
+        shardList.get[index].fetchClientValue('guilds.cache.size').then(count => {
             guildCount += count;
 
-            index++;
-            getStats(index, guildCount)
+            getStats(index+1, guildCount)
         });
         return;
     } else {
