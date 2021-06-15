@@ -1,8 +1,8 @@
 {
   "name": "trump-bot",
   "version": "1.0.0",
-  "description": "https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&permissions=0",
-  "main": "bot.js",
+  "description": "https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&permissions=3230720",
+  "main": "sharder.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
