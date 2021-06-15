@@ -1,0 +1,24 @@
+{
+  "name": "trump-bot",
+  "version": "1.0.0",
+  "description": "https://discordapp.com/oauth2/authorize?client_id=247869756609265664&scope=bot&permissions=0",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blogshot/trump-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Blogshot/trump-bot/issues"
+  },
+  "homepage": "https://github.com/Blogshot/trump-bot#readme",
+  "dependencies": {
+    "discord.js": "13.0.0-dev.f7eeccba4b7015496df811f10cc2da2b0fab0630",
+    "@discordjs/voice": "0.4.0",
+    "libsodium-wrappers": "0.7.9"
+  }
+}
