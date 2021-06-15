@@ -180,7 +180,10 @@ function getVoiceChannelList(channels) {
 }
 
 function getStats(client) {
-    const stats = require('../stats.json');
+    const fs = require('fs');
+
+    let rawdata = fs.readFileSync('./stats.json');
+    let stats = JSON.parse(rawdata);
 
     // online for x milliseconds
     var milliseconds = client.uptime;
@@ -196,7 +199,7 @@ function getStats(client) {
 
     var dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
 
-    var shards = stats.shards == "0" ? "not sharded" : stats.shards + " shards";
+    var shards = stats.shards == "1" ? "not sharded" : stats.shards + " shards";
 
     return "Current stats:\n"
         + "```"

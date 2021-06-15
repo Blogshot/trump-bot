@@ -21,7 +21,7 @@ COPY . .
 RUN npm install
 
 # create stats file
-RUN echo '{ "guildCount": 0, "shards": 0 }' > stats.json
+RUN echo '{ "guildCount": 0, "shards": 1 }' > stats.json
 
 # Invoke build with "docker build --build-arg token=<token> -t trump-bot ."
 ARG token
