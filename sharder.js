@@ -7,7 +7,7 @@ const fs = require('fs');
 // write PID-file
 fs.writeFile(
     './trump.pid',
-    process.pid,
+    parseInt(process.pid).toString(),
     function (error) {
         if (error) return logger.log(null, error);
     }
@@ -35,35 +35,22 @@ setInterval(function () {
 
 function getStats(index, guildCount) {
 
-    var shardList = manager.shards;
+    manager.fetchClientValues('guilds.cache.size').then(results => {
 
-    // if there are more shards to go
-    if (index < shardList.length) {
+      // write current stats
+      var fileName = './stats.json';
+      var file = require(fileName);
 
-        // get guildCount of that shard and recurse
-        shardList.get[index].fetchClientValue('guilds.cache.size').then(count => {
-            guildCount += count;
+      file.guildCount = results.reduce((prev, val) => prev + val, 0);
+      file.shards = manager.shardList.length;
 
-            getStats(index+1, guildCount)
-        });
-        return;
-    } else {
-        // if all shards have been searched
-
-        // write current stats
-        var fileName = './stats.json';
-        var file = require(fileName);
-
-        file.guildCount = guildCount;
-        file.shards = shardList.length;
-
-        fs.writeFile(
-            fileName,
-            JSON.stringify(file, null, 2),
-            function (error) {
-                if (error) return logger.log(null, error);
-            }
-        );
-    }
+      fs.writeFile(
+          fileName,
+          JSON.stringify(file, null, 2),
+          function (error) {
+              if (error) return logger.log(null, error);
+          }
+      );
+    });
 }
 

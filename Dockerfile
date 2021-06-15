@@ -1,15 +1,24 @@
-FROM node:12
+FROM node:14
 LABEL maintainer knottsascha@gmail.com
 
-# install npm dependencies
-RUN npm install discord.js @discordjs/opus
+# install apt dependencies
+RUN apt update && apt install -y \
+  git \
+  dos2unix \
+  nano \
+  htop \
+  nodejs \
+  ffmpeg \
+  && rm -rf /var/lib/apt/lists/*
 
 # prepare environment
-RUN mkdir -p /discord-bots/trump-bot
-WORKDIR /discord-bots/trump-bot
+RUN mkdir -p /discord-bots/trump
+WORKDIR /discord-bots/trump
 
-# copy source code into container
 COPY . .
+
+# install npm dependencies
+RUN npm install
 
 # create stats file
 RUN echo '{ "guildCount": 0, "shards": 0 }' > stats.json

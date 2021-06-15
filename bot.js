@@ -1,16 +1,22 @@
 const stats = require('./stats.json');
 const config = require('./config.js');
-const Discord = require('discord.js');
+const { Client, Intents } = require('discord.js');
 const logger = require('./util/logger')
 const fs = require('fs');
 
-const client = new Discord.Client();
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const token = config.token;
 
 var isSharded = false;
 
-// cache audios in memory
-// TODO
+const {	AudioPlayerStatus,
+	AudioResource,
+	createAudioResource,
+	createAudioPlayer,
+	entersState,
+	joinVoiceChannel,
+	VoiceConnectionStatus
+} = require('@discordjs/voice');
 
 // set listeners
 setListeners(client);
@@ -20,18 +26,6 @@ client.login(token);
 
 function setListeners(client) {
 
-    /*
-    Disabled because this catches all kinds of errors that should be debugged instead of ignored.
-
-    process.on('uncaughtException', function (exception) {
-        logger.log("Global error: " + exception);
-    });
-
-    process.on("unhandledRejection", err => {
-        logger.log("Uncaught Promise Error: \n" + err.stack);
-    });
-    */
-
     client.on('ready', () => {
         // if != null there are shards
         isSharded = (client.shard != null);
@@ -40,9 +34,15 @@ function setListeners(client) {
             // write PID-file
             fs.writeFile(
                 './trump.pid',
-                process.pid,
+                parseInt(process.pid).toString(),
                 function (error) {
-                    if (error) return logger.log(null, error);
+                    if (error) {
+			if (isSharded) {
+        		  return logger.log(client.shard.ids, error);
+			} else {
+        		  return logger.log(null, error);
+			}
+		    }
                 }
             );
         }
@@ -50,7 +50,11 @@ function setListeners(client) {
         client.user.setStatus('online');
         client.user.setPresence({ activity: { name: (isSharded ? "!trump --help (" + client.shard.ids + ")" : "!trump --help"), status: 'idle' } });
 
-        logger.log(client.shard.ids, "Ready!");
+	if (isSharded) {
+          logger.log(client.shard.ids, "Ready!");
+	} else {
+          logger.log(null, "Ready!");
+	}
 
         // write stats every 30 seconds
         // dont use if the bot is startet by sharder.js!
@@ -63,11 +67,22 @@ function setListeners(client) {
     });
 
     client.on('reconnecting', () => {
-        logger.log(client.shard.ids, "Reconnecting shard");
+	var text="Reconnecting shard";
+
+	if (isSharded) {
+          logger.log(client.shard.ids, text);
+	} else {
+          logger.log(null, text);
+	}
     });
 
     client.on("disconnect", closeevent => {
-        logger.log(client.shard.ids, "Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!");
+        var text="Disconnected with code " + closeevent.code + " (" + closeevent.reason + ")!";
+	if (isSharded) {
+          logger.log(client.shard.ids, text);
+	} else {
+          logger.log(null, text);
+	}
 
         // https://github.com/hammerandchisel/discord-api-docs/issues/33
         // 4005 == already authenticated
@@ -78,13 +93,24 @@ function setListeners(client) {
             return;
         }
 
-        logger.log(client.shard.ids, "Reconnecting automatically...");
+	var text = "Reconnecting automatically...";
+	if (isSharded) {
+          logger.log(client.shard.ids, text);
+	} else {
+          logger.log(null, text);
+	}
+
         client.destroy().then(() => client.login(token));
 
     });
 
     client.on('error', error => {
-        logger.log(client.shard.ids, error);
+
+	if (isSharded) {
+          logger.log(client.shard.ids, error);
+	} else {
+          logger.log(null, error);
+	}
     });
 
     // create listener for messages
@@ -117,7 +143,7 @@ function handleMessage(message) {
     if (content.startsWith("!farage")) {
         politician = "farage";
     }
-	if (content.startsWith("!nippel")) {
+    if (content.startsWith("!nippel")) {
         politician = "nippel";
     }
 
@@ -131,7 +157,12 @@ function handleMessage(message) {
         return;
     }
 
-    logger.log(client.shard.ids, "Handling message: '" + content + "'");
+    var text = "Handling message: '" + content + "'";
+    if (isSharded) {
+      logger.log(client.shard.ids, text);
+    } else {
+      logger.log(null, text);
+    }
 
     var options = new Object();
 
@@ -156,7 +187,8 @@ function handleMessage(message) {
         }
     }
 
-    var isBusy = isBusyInGuild(guild);
+    //var isBusy = isBusyInGuild(guild);
+    var isBusy = false;
 
     if (isBusy) {
         textChannel.send("I am currently needed in Channel '" + isBusy.name + "'.");
@@ -186,7 +218,8 @@ function isBusyInGuild(guild) {
     return false;
 }
 
-function playAudio(voiceChannel, file, textChannel) {
+
+async function playAudio(voiceChannel, file, textChannel) {
 
     // check for permissions first
     if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
@@ -198,17 +231,49 @@ function playAudio(voiceChannel, file, textChannel) {
         return;
     };
 
-    voiceChannel.join().then(connection => {
+    var text = "Playing " + file;
+    if (isSharded) {
+      logger.log(client.shard.ids, text);
+    } else {
+      logger.log(null, text);
+    }
 
-        logger.log(client.shard.ids, "Queuing " + file);
+    // https://github.com/discordjs/voice/blob/main/examples/music-bot/src/bot.ts#L70
 
-        connection.play(fs.createReadStream(file), { type: 'ogg/opus' }).on("finish", () => {
-            voiceChannel.leave();
-        });
-
-    }).catch(error => {
-	logger.log(client.shard.ids, JSON.stringify(error));
+    const voiceConnection = joinVoiceChannel({
+	channelId: voiceChannel.id,
+	guildId: voiceChannel.guild.id,
+        adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+        selfMute: false,
+        selfDeaf: false,
     });
+
+    // Make sure the connection is ready before processing the user's request
+    try {
+
+	await entersState(voiceConnection, VoiceConnectionStatus.Ready, 20e3);
+
+        const audioPlayer = createAudioPlayer();
+        const resource = await createAudioResource(fs.createReadStream(file));
+
+        audioPlayer.play(resource);
+	voiceConnection.subscribe(audioPlayer);
+
+        await entersState(audioPlayer, AudioPlayerStatus.Idle, 2**31-1);
+        voiceConnection.destroy();
+
+    } catch (error) {
+
+        var text = JSON.stringify(error);
+        if (isSharded) {
+          logger.log(client.shard.ids, text);
+        } else {
+          logger.log(null, text);
+        }
+
+        textChannel.send("Failed to join voice channel.")
+        return;
+    }
 }
 
 function getRandomAudio(politician) {
@@ -233,7 +298,13 @@ function writeStats() {
         fileName,
         JSON.stringify(file, null, 2),
         function (error) {
-            if (error) return logger.log(client.shard.ids, error);
+            if (error) {
+		if (isSharded) {
+	          return logger.log(client.shard.ids, text);
+		} else {
+	          return logger.log(null, text);
+		}
+	    }
         }
     );
 }

@@ -20,6 +20,8 @@ module.exports = {
                 options.abort = true;
 
                 const embed = {
+		  content: 'Refer to the below information for general usage.',
+		  embeds: [{
                     "color": 16000000,
                     "thumbnail": {
                         "url": "https://trump.knotti.org/images/favicon.png"
@@ -42,9 +44,11 @@ module.exports = {
                         "value": "If you need help, contact Bloggi#7559 or join the [support-discord](https://discord.gg/MzfyfTm)."
                         }
                     ]
-                    };
+		  }]
+                };
 
-                textChannel.send("", { embed });
+                textChannel.send(embed);
+
                 /*
                 custom channel
                  */
