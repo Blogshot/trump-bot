@@ -51,6 +51,7 @@ function getStats(index, guildCount) {
               if (error) return logger.log(null, error);
           }
       );
-    });
+    })
+    .catch(console.error);
 }
 
