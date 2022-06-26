@@ -26,7 +26,7 @@ client.login(token);
 
 function setListeners(client) {
 
-    client.on('ready', () => {
+    client.once('ready', () => {
         // if != null there are shards
         isSharded = (client.shard != null);
 
@@ -48,13 +48,13 @@ function setListeners(client) {
         }
 
         client.user.setStatus('online');
-        client.user.setPresence({ activity: { name: (isSharded ? "!trump --help (" + client.shard.ids + ")" : "!trump --help"), status: 'idle' } });
-
-	if (isSharded) {
-          logger.log(client.shard.ids, "Ready!");
-	} else {
-          logger.log(null, "Ready!");
-	}
+        client.user.setPresence({ activities: [{name: "!trump --help"}],status: 'idle'});
+    
+        if (isSharded) {
+            logger.log(client.shard.ids, "Ready!");
+        } else {
+            logger.log(null, "Ready!");
+        }
 
         // write stats every 30 seconds
         // dont use if the bot is startet by sharder.js!
@@ -63,7 +63,7 @@ function setListeners(client) {
                 writeStats();
             }, 30000);
         }
-
+        
     });
 
     client.on('reconnecting', () => {
