@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:16
 LABEL maintainer knottsascha@gmail.com
 
 # install apt dependencies
@@ -7,13 +7,12 @@ RUN apt update && apt install -y \
   dos2unix \
   nano \
   htop \
-  nodejs \
   ffmpeg \
   && rm -rf /var/lib/apt/lists/*
 
 # prepare environment
-RUN mkdir -p /discord-bots/trump
-WORKDIR /discord-bots/trump
+RUN mkdir -p /bot/
+WORKDIR /bot
 
 COPY . .
 
