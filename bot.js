@@ -114,7 +114,7 @@ function setListeners(client) {
     });
 
     // create listener for messages
-    client.on('message', message => {
+    client.on('messageCreate', message => {
         handleMessage(message);
     });
 
@@ -152,7 +152,7 @@ function handleMessage(message) {
     }
 
     // make sure the text channel is a guild channel (type = text)
-    if (textChannel.type != "text") {
+    if (textChannel.type != "GUILD_TEXT") {
         textChannel.send("I can't be invoked in private messages, only in guilds.");
         return;
     }
@@ -171,11 +171,14 @@ function handleMessage(message) {
     options.file = getRandomAudio(politician);
 
     // has arguments?
-    content = content.replace("!" + politician, "").trim();
+    hasArguments = content.trim().indexOf(" ") != -1;
 
-    if (content != "") {
+    if (hasArguments) {
         var argumentParser = require("./util/argumentParser");
-        argumentParser.parse(options, client, content, politician, guild, author, textChannel);
+        args = content.substring(content.trim().indexOf(" ") +1)
+
+        logger.log(null, "Handling arguments " + args);
+        argumentParser.parse(options, client, args, politician, guild, author, textChannel);
     }
 
     if (options.leave) {
