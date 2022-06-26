@@ -140,12 +140,31 @@ module.exports = {
                 options.leave = true;
 
             } else {
+                /*
+                    check if sound file is possible
+                 */
+                
+                // get list of matching files
+                var candidates = getAudio(argument, false);
+                var candidatesNames = getAudio(argument, true);
 
-                options.abort = true;
+                if (candidates.length == 0) {
+                    // no match found, cant continue
+                    options.abort = true;
+                    textChannel.send("You entered an unknown argument (" + argument + "). Please enter `!trump --help` to view a list of commands.");
 
-                // unknown argument, print help and exit
-                textChannel.send("You entered an unknown argument (" + argument + "). Please enter `!trump --help` to view a list of commands.");
+                } else if (candidates.length > 1) {
 
+                    // multiple matches found, cant continue
+                    options.abort = true;
+                    textChannel.send("I found multiple audios matching your pattern. Please select one of the following:\n\n"
+                        + candidatesNames.join("\n"));
+
+                } else {
+
+                    // set the only match as desired audio
+                    options.file = candidates[0];
+                }
             }
         }
 
