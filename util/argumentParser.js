@@ -145,8 +145,8 @@ module.exports = {
                  */
                 
                 // get list of matching files
-                var candidates = getAudio(argument, false);
-                var candidatesNames = getAudio(argument, true);
+                var candidates = getAudio(politician, value, false);
+                var candidatesNames = getAudio(politician, value, true);
 
                 if (candidates.length == 0) {
                     // no match found, cant continue
