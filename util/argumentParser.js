@@ -249,7 +249,7 @@ function getAudio(politician, pattern, shorten) {
         var file = files[i];
 
         // get matches
-        if (file.match(regex)) {
+        if (file.indexOf(pattern) != -1 || file.match(regex)) {
             // add matched file
 	    if (shorten) {
 		candidates.push(file);
