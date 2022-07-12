@@ -274,7 +274,7 @@ async function playAudio(voiceChannel, file, textChannel) {
           logger.log(null, text);
         }
 
-        textChannel.send("Failed to join voice channel.")
+        textChannel.send("Failed to join voice channel.").catch(console.error);
         return;
     }
 }
