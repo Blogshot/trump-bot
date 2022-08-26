@@ -1,22 +1,14 @@
 const stats = require('./stats.json');
-const config = require('./config.js');
-const { Client, Intents } = require('discord.js');
+const config = require('./config.json');
+const { Client, GatewayIntentBits, SlashCommandBuilder, InteractionType, ChannelType, PermissionsBitField } = require('discord.js');
+const {	AudioPlayerStatus, createAudioResource, createAudioPlayer, entersState, joinVoiceChannel, VoiceConnectionStatus} = require('@discordjs/voice');
 const logger = require('./util/logger')
 const fs = require('fs');
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildVoiceStates] });
 const token = config.token;
 
 var isSharded = false;
-
-const {	AudioPlayerStatus,
-	AudioResource,
-	createAudioResource,
-	createAudioPlayer,
-	entersState,
-	joinVoiceChannel,
-	VoiceConnectionStatus
-} = require('@discordjs/voice');
 
 // set listeners
 setListeners(client);
@@ -48,7 +40,9 @@ function setListeners(client) {
         }
 
         client.user.setStatus('online');
-        client.user.setPresence({ activities: [{name: "!trump --help"}],status: 'idle'});
+        client.user.setPresence({ activities: [{name: "/trump"}],status: 'idle'});
+
+        registerCommands();
     
         if (isSharded) {
             logger.log(client.shard.ids, "Ready!");
@@ -112,127 +106,134 @@ function setListeners(client) {
           logger.log(null, error);
 	}
     });
+}
 
-    // create listener for messages
-    client.on('messageCreate', message => {
-        handleMessage(message);
-    });
+function registerCommands() {
+
+    const { REST } = require('@discordjs/rest');
+    const { Routes } = require('discord.js');
+    
+    const commands = [];
+    
+    var politicians = new Array("trump", "clinton", "merkel", "erdogan", "farage", "nippel")
+
+    for (i=0; i<politicians.length; i++) {
+        var politician = politicians[i];
+       
+        var data = new SlashCommandBuilder()
+            .setName(politician)
+            .setDescription('Plays a random quote from ' + politician)
+            .addStringOption(option =>
+                option.setName('quote')
+                    .setDescription('Specify quote to play')
+                    .setRequired(false)
+                    .setAutocomplete(true)
+            )
+            .addChannelOption(option =>
+                option.setName('channel')
+                    .setDescription('Specify voice channel to join')
+                    .setRequired(false)
+                    .addChannelTypes(ChannelType.GuildVoice)
+            );
+
+        commands.push(data.toJSON());
+    }
+
+    const rest = new REST({ version: '10' }).setToken(token);
+    
+    (async () => {
+        try {   
+            await rest.put(
+                Routes.applicationCommands(client.user.id),
+                { body: commands },
+            );
+    
+        } catch (error) {
+            logger.err(null, error);
+        }
+    })();
 
 }
 
-function handleMessage(message) {
-    var content = message.content.toLowerCase();
-    var textChannel = message.channel;
-    var guild = message.guild;
-    var author = message.author;
-
-    var politician;
-
-    if (content.startsWith("!trump")) {
-        politician = "trump";
-    }
-    if (content.startsWith("!clinton")) {
-        politician = "clinton";
-    }
-    if (content.startsWith("!merkel")) {
-        politician = "merkel";
-    }
-    if (content.startsWith("!erdogan")) {
-        politician = "erdogan";
-    }
-    if (content.startsWith("!farage")) {
-        politician = "farage";
-    }
-    if (content.startsWith("!nippel")) {
-        politician = "nippel";
-    }
-
-    if (politician == null) {
+client.on('interactionCreate', async interaction => {
+    // only register slash commands and autocomplete
+    if (!interaction.isChatInputCommand() && !interaction.isAutocomplete) {
+        console.log("exit")
         return;
-    }
+    } 
+    
+    if (interaction.type == InteractionType.ApplicationCommandAutocomplete) {
 
-    // make sure the text channel is a guild channel (type = text)
-    if (textChannel.type != "GUILD_TEXT") {
-        textChannel.send("I can't be invoked in private messages, only in guilds.");
-        return;
-    }
+        const focusedValue = interaction.options.getFocused(true);
 
-    var text = "Handling message: '" + content + "'";
-    if (isSharded) {
-      logger.log(client.shard.ids, text);
-    } else {
-      logger.log(null, text);
-    }
+        if (focusedValue.name == 'quote') {
+            const politician = interaction.commandName;
 
-    var options = new Object();
+            var sounds = getAudio(politician, focusedValue.value, true);
+        
+            if (sounds.length >25) {
+                sounds = sounds.slice(0,24);
+            }
 
-    // default, will be overwritten by argument if needed
-    options.voiceChannel = message.member.voice.channel;
-    options.file = getRandomAudio(politician);
-
-    // has arguments?
-    hasArguments = content.trim().indexOf(" ") != -1;
-
-    if (hasArguments) {
-        var argumentParser = require("./util/argumentParser");
-        args = content.substring(content.trim().indexOf(" ") +1)
-
-        logger.log(null, "Handling arguments " + args);
-        argumentParser.parse(options, client, args, politician, guild, author, textChannel);
-    }
-
-    if (options.leave) {
-        var voiceConnection = client.voice.connections.get(guild.id);
-
-        if (voiceConnection) {
-            voiceConnection.disconnect();
-            voiceConnection.channel.leave();
+            await interaction.respond(
+                sounds.map(choice => ({ name: choice, value: choice })),
+            );
         }
     }
 
-    //var isBusy = isBusyInGuild(guild);
-    var isBusy = false;
+    if (interaction.type == InteractionType.ApplicationCommand) {
 
-    if (isBusy) {
-        textChannel.send("I am currently needed in Channel '" + isBusy.name + "'.");
-        options.abort = true;
-    }
+        var command = interaction.commandName;
+        
+        var politician = command;
+        var author = interaction.member;
+        var voiceChannel = interaction.options.getChannel('channel')
+        var file = interaction.options.getString('quote');
 
-    if (!options.abort) {
-        if (options.voiceChannel) {
-            playAudio(options.voiceChannel, options.file, textChannel);
+        // fall back to author's voice channel if not specified
+        if (voiceChannel == null) {
+            voiceChannel = author.voice.channel;
+        }
+
+        // fall back to random audio if not specified
+        if (file == null) {
+            file = await getRandomAudio(politician)
         } else {
-            textChannel.send("You have to be in a voice channel to do this.");
+            file = "./audio/" + politician + "/" + file;
         }
-    }
-}
 
-function isBusyInGuild(guild) {
+        if (!fs.existsSync(file)) {
 
-    var connections = Array.from(client.voice.connections.values());
-
-    for (i = 0; i < connections.length; i++) {
-        var connection = connections[i];
-
-        if (connection.channel.guild == guild) {
-            return connection.channel;
+            console.log(file)
+            await interaction.reply({
+                content: 'You have entered an invalid quote. Please make sure to Discord\'s autocomplete feature.',
+                ephemeral: true
+            });
+            return;
         }
-    }
-    return false;
-}
 
+        // throw error if voiceChannel is still null: No option was given and the author is not in a voice channel
+        if (voiceChannel == null) {
+            await interaction.reply({
+                content: 'You are not in a voicechannel or have not specified a channel via the \'channel\' parameter.',
+                ephemeral: true
+            });
+            return;
+        }
+
+        
+        var fileWrap = file.substring(file.lastIndexOf("/") +1, file.lastIndexOf(".ogg"))
+        await interaction.reply({
+            content: `Playing \`${fileWrap}\` in channel ${voiceChannel}.`,
+            ephemeral: true
+        });
+
+        playAudio(voiceChannel, file)
+    }
+    
+});
 
 async function playAudio(voiceChannel, file, textChannel) {
-
-    // check for permissions first
-    if (!voiceChannel.permissionsFor(client.user.id).has("CONNECT")) {
-        textChannel.send("No permission to join this channel.")
-        return;
-    };
-    if (!voiceChannel.permissionsFor(client.user.id).has("SPEAK")) {
-        textChannel.send("No permission to speak in this channel.")
-        return;
-    };
 
     var text = "Playing " + file;
     if (isSharded) {
@@ -260,22 +261,21 @@ async function playAudio(voiceChannel, file, textChannel) {
         const resource = await createAudioResource(fs.createReadStream(file));
 
         audioPlayer.play(resource);
-	voiceConnection.subscribe(audioPlayer);
+	    voiceConnection.subscribe(audioPlayer);
 
         await entersState(audioPlayer, AudioPlayerStatus.Idle, 2**31-1);
-        voiceConnection.destroy();
-
+        
     } catch (error) {
 
-        var text = JSON.stringify(error);
         if (isSharded) {
-          logger.log(client.shard.ids, text);
+          logger.err(client.shard.ids, error.toString());
         } else {
-          logger.log(null, text);
+          logger.err(null, error.toString());
         }
-
-        textChannel.send("Failed to join voice channel.").catch(console.error);
         return;
+    }
+    finally {
+        voiceConnection.destroy();
     }
 }
 
@@ -287,6 +287,37 @@ function getRandomAudio(politician) {
     var index = Math.floor(Math.random() * (files.length));
 
     return "./audio/" + politician + "/" + files[index];
+}
+
+function getAudio(politician, pattern, shorten) {
+
+    // "shorten" is a boolean that tells the function to return only the file name, not the whole path
+    var fs = require('fs');
+
+    var folder = "./audio/" + politician;
+    var files = fs.readdirSync(folder);
+
+    var candidates = [];
+    // "^.*" + pattern + ".*";
+    var regex = "^" + pattern.split("*").join(".*");
+
+    // iterate through available files to find matching ones
+    for (i = 0; i < files.length; i++) {
+
+        var file = files[i];
+
+        // get matches
+        if (file.indexOf(pattern) != -1 || file.match(regex)) {
+            // add matched file
+            if (shorten) {
+                candidates.push(file);
+            } else {
+                candidates.push(folder + "/" + file);
+            }
+        }
+    }
+
+    return candidates;
 }
 
 function writeStats() {
