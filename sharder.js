@@ -1,7 +1,7 @@
 
 const Discord = require('discord.js');
 const logger = require('./util/logger')
-const config = require('./config.js');
+const config = require('./config.json');
 const fs = require('fs');
 
 // write PID-file
