@@ -26,6 +26,6 @@ RUN echo '{ "guildCount": 0, "shards": 1 }' > stats.json
 ARG token
 
 # create config file
-RUN echo "module.exports = { token: \"$token\" };" > config.js
+RUN echo "{ token: \"$token\" };" > config.json
 
 ENTRYPOINT node sharder.js
