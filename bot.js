@@ -233,7 +233,7 @@ client.on('interactionCreate', async interaction => {
     
 });
 
-async function playAudio(voiceChannel, file, textChannel) {
+async function playAudio(voiceChannel, file) {
 
     var text = "Playing " + file;
     if (isSharded) {
